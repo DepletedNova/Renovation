@@ -9,8 +9,6 @@ namespace KitchenRenovation.Systems
     {
         private EntityQuery Spawners;
 
-        public Allocator ALlocator { get; private set; }
-
         protected override void Initialise()
         {
             base.Initialise();

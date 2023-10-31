@@ -125,7 +125,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Components\CDestroyedWall.cs" />
-    <Compile Include="Components\CBeingDestroyedBy.cs" />
     <Compile Include="Components\CTargetableWall.cs" />
     <Compile Include="Components\CDestructiveAppliance.cs" />
     <Compile Include="Components\CLinkedMobileBase.cs" />
@@ -134,6 +133,7 @@
     <Compile Include="Components\CForceSpawn.cs" />
     <Compile Include="Components\Purchasing\CHasDailyPurchase.cs" />
     <Compile Include="Components\Purchasing\CSpawnBoughtAppliance.cs" />
+    <Compile Include="Components\SRebuildReachability.cs" />
     <Compile Include="GDOs\MobileWallDrill.cs" />
     <Compile Include="GDOs\WallDrill.cs" />
     <Compile Include="Main.cs" />
@@ -143,8 +143,8 @@
     <Compile Include="Systems\DestructiveApplianceLocks.cs" />
     <Compile Include="Systems\ManageCostIndicators.cs" />
     <Compile Include="Systems\MoveDestructiveAppliances.cs" />
+    <Compile Include="Systems\RebuildReachability.cs" />
     <Compile Include="Systems\SpawnBoughtAppliance.cs" />
-    <Compile Include="Systems\WallDestructionLocks.cs" />
     <Compile Include="Utility\Extensions.cs" />
     <Compile Include="Views\CostIndicatorView.cs" />
     <Compile Include="Views\NightObjectView.cs" />

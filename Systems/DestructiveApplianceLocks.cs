@@ -2,6 +2,7 @@
 using KitchenRenovation.Components;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
 
 namespace KitchenRenovation.Systems
 {
@@ -26,7 +27,7 @@ namespace KitchenRenovation.Systems
                 var duration = durations[i];
                 var destructive = destructives[i];
                 var target = destructive.DestructionTarget;
-                duration.IsLocked = target == Entity.Null || (!Has<CAppliance>(target) && !Has<CTargetableWall>(target));
+                duration.IsLocked = target == Entity.Null || (!Has<CAppliance>(target) && !Has<CTargetableWall>(target)) || destructive.TargetDistance - destructive.CurrentDistance > 0.05f;
                 Set(entities[i], duration);
             }
         }
