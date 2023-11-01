@@ -30,12 +30,14 @@ namespace KitchenRenovation
 
         // References
         public static CustomViewType PurchaseView;
+        public static CustomViewType RenovationView;
 
         private void PostActivate()
         {
             //AddIcons();
 
             PurchaseView = AddViewType("PurchaseView", SetupPurchaseView);
+            RenovationView = AddViewType("RenovationView", SetupRenovationView);
         }
 
         private void BuildGameData(GameData gameData)
@@ -49,6 +51,13 @@ namespace KitchenRenovation
             prefab.TryAddComponent<CostIndicatorView>().Text =
                 prefab.CreateLabel("Coins", Vector3.zero, Quaternion.identity, MaterialUtils.GetExistingMaterial("Alphakind Atlas Material"), FontUtils.GetExistingTMPFont("Large Text"),
                 0, 2f, "<color=#ff1111>999 <sprite name=\"coin\" color=#FF9800>").GetComponent<TextMeshPro>();
+            return prefab;
+        }
+
+        private GameObject SetupRenovationView()
+        {
+            var prefab = new GameObject("Renovation");
+            prefab.AddComponent<RenovationView>();
             return prefab;
         }
 

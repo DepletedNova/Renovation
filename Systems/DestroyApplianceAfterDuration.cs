@@ -1,14 +1,11 @@
 ﻿using Kitchen;
-using KitchenLib.Customs;
 using KitchenRenovation.Components;
 using Unity.Collections;
 using Unity.Entities;
-using UnityEngine;
 
 namespace KitchenRenovation.Systems
 {
-    [UpdateAfter(typeof(DestroyApplianceAfterDuration))]
-    public class DestroyWallAfterDuration : GameSystemBase
+    public class DestroyApplianceAfterDuration : GameSystemBase
     {
         private EntityQuery Mobiles;
         protected override void Initialise()
@@ -27,29 +24,16 @@ namespace KitchenRenovation.Systems
                 var cDestructive = GetComponent<CDestructiveAppliance>(entity);
 
                 Entity target = cDestructive.DestructionTarget;
-                if (!cDuration.Active || cDuration.Remaining > 0 || target == Entity.Null || !Require(target, out CTargetableWall cWall))
+                if (!cDuration.Active || cDuration.Remaining > 0 || target == Entity.Null || !Has<CAppliance>(target))
                     continue;
 
                 cDestructive.DestructionTarget = Entity.Null;
                 Set(entity, cDestructive);
 
-                Set<CDestroyedWall>(target);
+                EntityManager.DestroyEntity(target);
 
                 Set<SRebuildReachability>();
-
-                // Destroy appliances on walls
-                DestroyWallAppliance(cWall.Tile1, cWall.Tile2);
-                DestroyWallAppliance(cWall.Tile2, cWall.Tile1);
             }
-        }
-
-        private void DestroyWallAppliance(Vector3 tile1, Vector3 tile2)
-        {
-            var appliance = GetOccupant(tile1, KitchenData.OccupancyLayer.Wall);
-            if (appliance == Entity.Null && Require(appliance, out CPosition position) &&
-                !position.BackwardPosition.IsSameTile(tile2) && !Has<CMustHaveWall>(appliance))
-                return;
-            EntityManager.DestroyEntity(appliance);
         }
     }
 }

@@ -1,9 +1,6 @@
 ﻿using Kitchen;
 using Kitchen.Layouts;
-using KitchenLib.References;
 using KitchenRenovation.Components;
-using System;
-using System.Runtime.CompilerServices;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -68,8 +65,10 @@ namespace KitchenRenovation.Systems
 
                     // Appliance targetting
                     var occupant = GetOccupant(forwardPos);
-                    if (occupant != Entity.Null && !Has<CAllowMobilePathing>(occupant) && Has<CAppliance>(occupant))
+                    if (occupant != Entity.Null && !Has<CAllowMobilePathing>(occupant) && !Has<CMustHaveWall>(occupant) && Has<CAppliance>(occupant))
                     {
+                        LogInfo("Targeted appliance");
+
                         blocked = !forwardAppliance.DestroysAppliances;
 
                         totalTime = forwardAppliance.DestroyApplianceTime;
@@ -83,6 +82,8 @@ namespace KitchenRenovation.Systems
                     if (GetTile(currentPos).RoomID != GetTile(forwardPos).RoomID && (!hasFeature || !feature.Type.IsDoor()) &&
                         GetTargetableFeature(currentPos, forwardPos, entity, out var targetedWall))
                     {
+                        LogInfo("Targeted wall");
+
                         blocked = !forwardAppliance.DestroysWalls;
 
                         totalTime = forwardAppliance.DestroyWallTime;

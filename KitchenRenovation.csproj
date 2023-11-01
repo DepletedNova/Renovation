@@ -32,6 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\workshop\content\1599600\2949018507\0Harmony.dll</HintPath>
+    </Reference>
     <Reference Include="Kitchen.Common">
       <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\PlateUp\PlateUp\PlateUp_Data\Managed\Kitchen.Common.dll</HintPath>
     </Reference>
@@ -116,6 +119,7 @@
     <Reference Include="UnityEngine.IMGUIModule">
       <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\PlateUp\PlateUp\PlateUp_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.PhysicsModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
     <Reference Include="UnityEngine.UI">
       <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\PlateUp\PlateUp\PlateUp_Data\Managed\UnityEngine.UI.dll</HintPath>
     </Reference>
@@ -134,13 +138,17 @@
     <Compile Include="Components\Purchasing\CHasDailyPurchase.cs" />
     <Compile Include="Components\Purchasing\CSpawnBoughtAppliance.cs" />
     <Compile Include="Components\SRebuildReachability.cs" />
+    <Compile Include="Components\SRenovation.cs" />
     <Compile Include="GDOs\MobileWallDrill.cs" />
     <Compile Include="GDOs\WallDrill.cs" />
     <Compile Include="Main.cs" />
+    <Compile Include="Patches\LayoutViewPatch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Systems\DailyPurchaseableLocks.cs" />
+    <Compile Include="Systems\DestroyApplianceAfterDuration.cs" />
     <Compile Include="Systems\DestroyWallAfterDuration.cs" />
     <Compile Include="Systems\DestructiveApplianceLocks.cs" />
+    <Compile Include="Systems\EnsureRenovationView.cs" />
     <Compile Include="Systems\ManageCostIndicators.cs" />
     <Compile Include="Systems\MoveDestructiveAppliances.cs" />
     <Compile Include="Systems\RebuildReachability.cs" />
@@ -148,6 +156,7 @@
     <Compile Include="Utility\Extensions.cs" />
     <Compile Include="Views\CostIndicatorView.cs" />
     <Compile Include="Views\NightObjectView.cs" />
+    <Compile Include="Views\RenovationView.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

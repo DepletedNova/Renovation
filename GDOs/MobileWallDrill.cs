@@ -36,11 +36,11 @@ namespace KitchenRenovation.GDOs
             new CDestructiveAppliance
             {
                 TileRange = 5f,
-                Speed = 0.25f,
+                Speed = 0.35f,
                 DestroysAppliances = true,
-                DestroyApplianceTime = 5f,
+                DestroyApplianceTime = 2f,
                 DestroysWalls = true,
-                DestroyWallTime = 5f,
+                DestroyWallTime = 2f,
             },
         };
 
