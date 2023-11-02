@@ -55,7 +55,8 @@ namespace KitchenRenovation.Systems
                     tiles[i2] = tile;
                 }
 
-                // Feature swap
+                // Feature swap/build
+                bool replacedFeature = false;
                 for (int i2 = 0; i2 < features.Length; i2++)
                 {
                     var feature = features[i2];
@@ -63,7 +64,18 @@ namespace KitchenRenovation.Systems
                     {
                         feature.Type = Kitchen.Layouts.FeatureType.Hatch;
                         features[i2] = feature;
+                        replacedFeature = true;
+                        break;
                     }
+                }
+                if (!replacedFeature)
+                {
+                    features.Add(new CLayoutFeature
+                    {
+                        Tile1 = wall.Tile1,
+                        Tile2 = wall.Tile2,
+                        Type = Kitchen.Layouts.FeatureType.Hatch
+                    });
                 }
             }
         }

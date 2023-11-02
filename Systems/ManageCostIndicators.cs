@@ -8,17 +8,19 @@ namespace KitchenRenovation.Systems
     {
         protected override ViewType ViewType => PurchaseView;
 
-        protected override EntityQuery GetSearchQuery() => GetEntityQuery(new QueryHelper()
-            .All(typeof(CCanBeDailyPurchased), typeof(CPosition)).None(typeof(CHasDailyPurchase)));
+        protected override EntityQuery GetSearchQuery() => GetEntityQuery(typeof(CCanBeDailyPurchased), typeof(CPosition));
 
         protected override bool ShouldHaveIndicator(Entity candidate) =>
-            !Has<CHasDailyPurchase>(candidate) && !Has<CBeingLookedAt>(candidate) && !Has<CHeldBy>() && !Has<SIsNightTime>();
+            !Has<CHasDailyPurchase>(candidate) && !Has<CHeldBy>(candidate) && !Has<CDisplayDuration>(candidate) && HasSingleton<SIsNightTime>();
 
         protected override Entity CreateIndicator(Entity source)
         {
+            if (!Require(source, out CPosition position) || !Require(source, out CCanBeDailyPurchased purchase))
+                return Entity.Null;
+
             var indicator = base.CreateIndicator(source);
-            Set<CPosition>(indicator, GetComponent<CPosition>(source).Position);
-            Set(indicator, new CCostIndicator { Cost = GetComponent<CCanBeDailyPurchased>(source).Count });
+            Set<CPosition>(indicator, position.Position);
+            Set(indicator, new CCostIndicator { Cost = purchase.Cost });
             return indicator;
         }
     }

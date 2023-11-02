@@ -4,6 +4,6 @@ namespace KitchenRenovation.Components
 {
     public struct CCanBeDailyPurchased : IApplianceProperty
     {
-        public int Count;
+        public int Cost;
     }
 }

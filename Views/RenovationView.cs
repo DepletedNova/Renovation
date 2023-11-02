@@ -14,6 +14,13 @@ namespace KitchenRenovation.Views
     {
         public static LayoutView Layout;
 
+        // Cached
+        public List<GameObject> DestroyedWalls = new();
+
+        // Prefabs
+        public GameObject LinerPrefab;
+        public GameObject HatchPrefab;
+
         private ViewData Data = default;
         protected override void UpdateData(ViewData data)
         {
@@ -22,23 +29,48 @@ namespace KitchenRenovation.Views
 
             Data = data;
 
-            LogInfo("Rebuilding walls");
-
             var builder = Layout.Builder;
+
+            // Walls
             for (int i = builder.Walls.Count - 1; i >= 0; i--)
             {
                 var wall = builder.Walls[i];
                 var tile1 = wall.Tile1.ToWorld();
                 var tile2 = wall.Tile2.ToWorld();
-                if (!Data.DestroyedWalls.Any(p =>
-                        (p.Item1 == tile1 && p.Item2 == tile2) ||
-                        (p.Item2 == tile1 && p.Item1 == tile2)
-                    ))
+
+                if (wall.Collider == null)
                     continue;
 
-                Destroy(wall.Collider.gameObject);
-                builder.Walls.RemoveAt(i);
+                // Destroyed
+                if (Data.DestroyedWalls.Any(p => (p.Item1 == tile1 && p.Item2 == tile2) ||
+                        (p.Item2 == tile1 && p.Item1 == tile2)))
+                {
+                    Destroy(wall.Collider.gameObject);
+                    builder.Walls.RemoveAt(i);
+                    continue;
+                }
             }
+
+            // Doors
+            for (int i = builder.Doors.Count - 1; i >= 0; i--)
+            {
+                var door = builder.Doors[i];
+                var tile1 = door.Tile1.ToWorld();
+                var tile2 = door.Tile2.ToWorld();
+
+                if (door.DoorController == null)
+                    continue;
+                
+                // Destroyed
+                if (Data.DestroyedWalls.Any(p => (p.Item1 == tile1 && p.Item2 == tile2) ||
+                        (p.Item2 == tile1 && p.Item1 == tile2)))
+                {
+                    Destroy(door.DoorController.gameObject);
+                    builder.Doors.RemoveAt(i);
+                    continue;
+                }
+            }
+
         }
 
         [MessagePackObject]

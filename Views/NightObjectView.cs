@@ -47,7 +47,7 @@ namespace KitchenRenovation.Views
                     var entity = entities[i];
                     SendUpdate(GetComponent<CLinkedView>(entity), new ViewData
                     {
-                        ShowAppliance = !HasSingleton<SIsDayTime>() || (Has<CSpawnMobileAppliance>(entity) && !Has<CHasDailyPurchase>(entity))
+                        ShowAppliance = HasSingleton<SIsNightTime>() || (Has<CSpawnBoughtAppliance>(entity) && !Has<CHasDailyPurchase>(entity))
                     }, MessageType.SpecificViewUpdate);
                 }
             }

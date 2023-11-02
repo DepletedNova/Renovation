@@ -14,25 +14,30 @@ namespace KitchenRenovation.GDOs
         public override string UniqueNameID => "Wall Drill";
         public override List<(Locale, ApplianceInfo)> InfoList => new()
         {
-            (Locale.English, CreateApplianceInfo("Drill", "Drills through appliances and walls!", new List<Appliance.Section>()
+            (Locale.English, CreateApplianceInfo("Drill", "Quite destructive!", new List<Appliance.Section>()
             {
                 new()
                 {
+                    Title = "Emergency Switch",
+                    Description = "Can be interacted to be shut off during the day"
+                },
+                new()
+                {
                     Title = "Driller",
-                    Description = "Drives forward during the day, destroying appliances and walls in its path",
-                    RangeDescription = "<sprite name=\"range\"> 5 Tiles"
+                    Description = "Drives forward during the day and destroys both appliances and walls",
+                    RangeDescription = "<sprite name=\"range\"> 4 Tiles"
                 },
                 new()
                 {
                     Title = "Fueled",
-                    Description = "Requires payment per day of use except for the day of purchase",
-                    RangeDescription = "<sprite name=\"coin\"> 120"
-                }
+                    Description = "Requires payment per day of use",
+                    RangeDescription = "<sprite name=\"coin\"> 150"
+                },
             }, new()))
         };
         public override bool IsPurchasable => true;
         public override PriceTier PriceTier => PriceTier.Expensive;
-        public override int PurchaseCostOverride => 500;
+        public override int PurchaseCostOverride => 400;
         public override RarityTier RarityTier => RarityTier.Rare;
         public override ShoppingTags ShoppingTags => ShoppingTags.Misc | ShoppingTags.Technology;
 
@@ -52,27 +57,27 @@ namespace KitchenRenovation.GDOs
             },
             new CCanBeDailyPurchased
             {
-                Count = 120
-            },
-            new CHasDailyPurchase(),
+                Cost = 150
+            }
         };
 
         public override GameObject Prefab => GetPrefab("Wall Drill");
         public override void SetupPrefab(GameObject prefab)
         {
-            prefab.ApplyMaterialToChild("Base", "Metal Dark");
-            prefab.ApplyMaterialToChildren("Light", "Indicator Light");
+            prefab.ApplyMaterialToChild("Base", "Metal Very Dark");
             
             prefab.TryAddComponent<NightObjectView>().Object = SetupDrillMaterials(prefab.GetChild("Drill"));
+            prefab.TryAddComponent<PurchaseLightView>().Renderer = 
+                prefab.ApplyMaterialToChild("Light", "Indicator Light").GetComponent<MeshRenderer>();
         }
 
         internal static GameObject SetupDrillMaterials(GameObject prefab)
         {
             prefab.ApplyMaterialToChild("Chassis", "Metal - Brass");
             prefab.ApplyMaterialToChild("Engine", "Metal Dark", "Hob Black");
-            prefab.ApplyMaterialToChild("Wheels", "Metal Dark", "Metal");
+            prefab.ApplyMaterialToChild("Wheels", "Metal Very Dark", "Metal Dark");
             prefab.ApplyMaterialToChild("Treads", "Metal Black");
-            prefab.ApplyMaterialToChild("Drill", "Metal");
+            prefab.ApplyMaterialToChild("Drill", "Metal Dark");
             return prefab;
         }
     }

@@ -38,8 +38,7 @@ namespace KitchenRenovation.Systems
                 // Destination arrival
                 if (math.abs(forwardAppliance.TileRange - forwardAppliance.CurrentDistance) < 0.01f)
                 {
-                    forwardAppliance.CompletedTask = true;
-                    Set(entity, forwardAppliance);
+                    DisableMobile(entity, forwardAppliance);
                     continue;
                 }
 
@@ -50,16 +49,16 @@ namespace KitchenRenovation.Systems
                     var forwardPos = (basePos.Position - basePos.Forward(tileDist + 1f)).Rounded();
                     var currentPos = (basePos.Position - basePos.Forward(tileDist)).Rounded();
 
-                    forwardAppliance.TargetDistance = tileDist + 1f;
+                    forwardAppliance.TargetDistance = tileDist + .8f;
 
                     if (GetTile(forwardPos).Type == RoomType.NoRoom)
                     {
-                        forwardAppliance.CompletedTask = true;
-                        Set(entity, forwardAppliance);
+                        DisableMobile(entity, forwardAppliance);
                         continue;
                     }
 
                     bool blocked = false;
+                    bool isAppliance = false;
 
                     float totalTime = 0;
 
@@ -67,7 +66,12 @@ namespace KitchenRenovation.Systems
                     var occupant = GetOccupant(forwardPos);
                     if (occupant != Entity.Null && !Has<CAllowMobilePathing>(occupant) && !Has<CMustHaveWall>(occupant) && Has<CAppliance>(occupant))
                     {
-                        LogInfo("Targeted appliance");
+                        if (Has<CApplianceTable>(occupant) || Has<CApplianceChair>(occupant) || Has<CImmovable>(occupant) || 
+                            Has<CApplianceHostStand>(occupant))
+                        {
+                            DisableMobile(entity, forwardAppliance);
+                            continue;
+                        }
 
                         blocked = !forwardAppliance.DestroysAppliances;
 
@@ -75,28 +79,30 @@ namespace KitchenRenovation.Systems
 
                         forwardAppliance.TargetDistance = tileDist + 0.15f;
                         forwardAppliance.DestructionTarget = occupant;
+
+                        isAppliance = true;
                     }
 
                     // Wall targetting
                     var hasFeature = TryGetFeature(currentPos, forwardPos, out var feature);
-                    if (GetTile(currentPos).RoomID != GetTile(forwardPos).RoomID && (!hasFeature || !feature.Type.IsDoor()) &&
+                    if (GetTile(currentPos).RoomID != GetTile(forwardPos).RoomID && 
+                        (!hasFeature || !feature.Type.IsDoor() || occupant != Entity.Null || GetOccupant(currentPos) != Entity.Null) &&
                         GetTargetableFeature(currentPos, forwardPos, entity, out var targetedWall))
                     {
-                        LogInfo("Targeted wall");
-
                         blocked = !forwardAppliance.DestroysWalls;
 
                         totalTime = forwardAppliance.DestroyWallTime;
 
                         forwardAppliance.TargetDistance = tileDist;
                         forwardAppliance.DestructionTarget = targetedWall;
+
+                        isAppliance = false;
                     }
 
                     // Blocked
                     if (blocked)
                     {
-                        forwardAppliance.CompletedTask = true;
-                        Set(entity, forwardAppliance);
+                        DisableMobile(entity, forwardAppliance);
                         continue;
                     }
 
@@ -104,6 +110,11 @@ namespace KitchenRenovation.Systems
                     {
                         cDuration.Total = totalTime;
                         Set(entity, cDuration);
+                        if (Require(entity, out CDisplayDuration cDisplay))
+                        {
+                            cDisplay.IsBad = isAppliance;
+                            Set(entity, cDisplay);
+                        }
                     }
                 }
 
@@ -116,6 +127,13 @@ namespace KitchenRenovation.Systems
                 Set(entity, forwardAppliance);
                 Set(entity, pos);
             }
+        }
+
+        private void DisableMobile(Entity mobile, CDestructiveAppliance component)
+        {
+            component.CompletedTask = true;
+            component.DestructionTarget = Entity.Null;
+            Set(mobile, component);
         }
 
         private bool TryGetFeature(Vector3 from, Vector3 to, out CLayoutFeature feature)

@@ -32,7 +32,7 @@ namespace KitchenRenovation.Systems
 
                 EntityManager.DestroyEntity(target);
 
-                Set<SRebuildReachability>();
+                CSoundEvent.Create(EntityManager, DestroySoundEvent);
             }
         }
     }

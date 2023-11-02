@@ -15,6 +15,7 @@ using UnityEngine;
 using KitchenLib.Views;
 using KitchenRenovation.Utility;
 using KitchenRenovation.Views;
+using System.Collections.Generic;
 
 namespace KitchenRenovation
 {
@@ -31,10 +32,11 @@ namespace KitchenRenovation
         // References
         public static CustomViewType PurchaseView;
         public static CustomViewType RenovationView;
+        public static SoundEvent DestroySoundEvent;
 
         private void PostActivate()
         {
-            //AddIcons();
+            AddIcons();
 
             PurchaseView = AddViewType("PurchaseView", SetupPurchaseView);
             RenovationView = AddViewType("RenovationView", SetupRenovationView);
@@ -42,7 +44,25 @@ namespace KitchenRenovation
 
         private void BuildGameData(GameData gameData)
         {
+            SetupDestroySoundEvents(gameData);
+        }
 
+        private void SetupDestroySoundEvents(GameData gameData)
+        {
+            DestroySoundEvent = (SoundEvent)VariousUtils.GetID(GUID + "-DESTROY");
+
+            if (!gameData.ReferableObjects.Clips.ContainsKey(DestroySoundEvent))
+                gameData.ReferableObjects.Clips.Add(DestroySoundEvent, new AudioAssetRandom());
+
+            Bundle.LoadAllAssets<AudioClip>();
+
+            var d1 = GetAsset<AudioClip>("Destroy_1"); d1.LoadAudioData();
+            var d2 = GetAsset<AudioClip>("Destroy_2"); d2.LoadAudioData();
+            var d3 = GetAsset<AudioClip>("Destroy_3"); d3.LoadAudioData();
+
+            typeof(AudioAssetRandom)
+                .GetField("Clips", BindingFlags.Instance | BindingFlags.NonPublic)
+                .SetValue(gameData.ReferableObjects.Clips[DestroySoundEvent], new List<AudioClip>() { d1, d2, d3 });
         }
 
         private GameObject SetupPurchaseView()

@@ -37,6 +37,8 @@ namespace KitchenRenovation.Systems
 
                 Set<SRebuildReachability>();
 
+                CSoundEvent.Create(EntityManager, DestroySoundEvent);
+
                 // Destroy appliances on walls
                 DestroyWallAppliance(cWall.Tile1, cWall.Tile2);
                 DestroyWallAppliance(cWall.Tile2, cWall.Tile1);
