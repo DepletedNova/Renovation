@@ -30,7 +30,7 @@ namespace KitchenRenovation.Systems
                 cDestructive.DestructionTarget = Entity.Null;
                 Set(entity, cDestructive);
 
-                EntityManager.DestroyEntity(target);
+                ECBs[ECB.DestructionGroup].CreateCommandBuffer().DestroyEntity(target);
 
                 CSoundEvent.Create(EntityManager, DestroySoundEvent);
             }

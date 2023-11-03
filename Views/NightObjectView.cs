@@ -36,7 +36,9 @@ namespace KitchenRenovation.Views
             protected override void Initialise()
             {
                 base.Initialise();
-                Query = GetEntityQuery(new QueryHelper().Any(typeof(CSpawnMobileAppliance), typeof(CSpawnBoughtAppliance)).All(typeof(CLinkedView)));
+                Query = GetEntityQuery(new QueryHelper()
+                    .Any(typeof(CSpawnMobileAppliance), typeof(CSpawnBoughtAppliance), typeof(CNightObject))
+                    .All(typeof(CLinkedView)));
             }
 
             protected override void OnUpdate()

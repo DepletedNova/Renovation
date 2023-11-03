@@ -29,6 +29,12 @@ namespace KitchenRenovation.Systems
                 var target = destructive.DestructionTarget;
                 duration.IsLocked = target == Entity.Null || (!Has<CAppliance>(target) && !Has<CTargetableWall>(target)) || destructive.TargetDistance - destructive.CurrentDistance > 0.05f;
                 Set(entities[i], duration);
+
+                if (duration.IsLocked && math.abs(destructive.TargetDistance - destructive.CurrentDistance) < 0.05f && target != Entity.Null)
+                {
+                    destructive.DestructionTarget = Entity.Null;
+                    Set(entities[i], destructive);
+                }
             }
         }
     }

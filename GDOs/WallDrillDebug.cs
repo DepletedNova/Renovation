@@ -9,12 +9,12 @@ using UnityEngine;
 
 namespace KitchenRenovation.GDOs
 {
-    public class WallDrill : CustomAppliance
+    public class WallDrillDebug : CustomAppliance
     {
-        public override string UniqueNameID => "Wall Drill";
+        public override string UniqueNameID => "Wall Drill Debug";
         public override List<(Locale, ApplianceInfo)> InfoList => new()
         {
-            (Locale.English, CreateApplianceInfo("Drill", "Quite destructive!", new List<Appliance.Section>()
+            (Locale.English, CreateApplianceInfo("Debug Drill", "I didn't want to pay", new List<Appliance.Section>()
             {
                 new()
                 {
@@ -29,17 +29,12 @@ namespace KitchenRenovation.GDOs
                 },
                 new()
                 {
-                    Title = "Fueled",
-                    Description = "Requires payment per day of use",
-                    RangeDescription = "<sprite name=\"coin\"> 150"
+                    Title = "Not Fueled",
+                    Description = "Doesn't require payment per day of use",
+                    RangeDescription = "<sprite name=\"coin\"> :)"
                 },
             }, new()))
         };
-        public override bool IsPurchasable => true;
-        public override PriceTier PriceTier => PriceTier.Expensive;
-        public override int PurchaseCostOverride => 500;
-        public override RarityTier RarityTier => RarityTier.Rare;
-        public override ShoppingTags ShoppingTags => ShoppingTags.Misc | ShoppingTags.Technology;
 
         public override List<IApplianceProperty> Properties => new()
         {
@@ -57,8 +52,9 @@ namespace KitchenRenovation.GDOs
             },
             new CCanBeDailyPurchased
             {
-                Cost = 150
-            }
+                Cost = 0
+            },
+            new CHasDailyPurchase()
         };
 
         public override GameObject Prefab => GetPrefab("Wall Drill");

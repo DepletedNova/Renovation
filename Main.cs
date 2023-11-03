@@ -76,8 +76,13 @@ namespace KitchenRenovation
 
         private GameObject SetupRenovationView()
         {
-            var prefab = new GameObject("Renovation");
-            prefab.AddComponent<RenovationView>();
+            var prefab = GetPrefab("Renovation View");
+            var view = prefab.AddComponent<RenovationView>();
+
+            var liner = GetPrefab("Destroyed Wall");
+            liner.ApplyMaterialToChild("Wall", "Metal");
+            view.LinerPrefab = liner;
+            
             return prefab;
         }
 

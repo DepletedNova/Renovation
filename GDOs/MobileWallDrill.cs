@@ -23,6 +23,7 @@ namespace KitchenRenovation.GDOs
 
         public override List<IApplianceProperty> Properties => new()
         {
+            new CAllowMobilePathing(),
             new CDoesNotOccupy(),
             new CFireImmune(),
             new CTakesDuration
@@ -41,7 +42,7 @@ namespace KitchenRenovation.GDOs
                 DestroysAppliances = true,
                 DestroyApplianceTime = 5f,
                 DestroysWalls = true,
-                DestroyWallTime = 20f,
+                DestroyWallTime = 5f,
             },
         };
 

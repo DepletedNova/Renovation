@@ -140,21 +140,27 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Components\CDestroyedWall.cs" />
-    <Compile Include="Components\CTargetableWall.cs" />
-    <Compile Include="Components\CDestructiveAppliance.cs" />
-    <Compile Include="Components\CLinkedMobileBase.cs" />
+    <Compile Include="Components\CDoorstop.cs" />
+    <Compile Include="Components\CNightObject.cs" />
+    <Compile Include="Components\Mobiles\CMobileShutoff.cs" />
+    <Compile Include="Components\Walls\CDestroyedWall.cs" />
+    <Compile Include="Components\Walls\CTargetableWall.cs" />
+    <Compile Include="Components\Mobiles\CDestructiveAppliance.cs" />
+    <Compile Include="Components\Mobiles\CLinkedMobileBase.cs" />
     <Compile Include="Components\Purchasing\CCanBeDailyPurchased.cs" />
     <Compile Include="Components\Purchasing\CCostIndicator.cs" />
-    <Compile Include="Components\CForceSpawn.cs" />
+    <Compile Include="Components\Mobiles\CForceSpawn.cs" />
     <Compile Include="Components\Purchasing\CHasDailyPurchase.cs" />
     <Compile Include="Components\Purchasing\CSpawnBoughtAppliance.cs" />
-    <Compile Include="Components\SRebuildReachability.cs" />
+    <Compile Include="Components\Walls\SRebuildReachability.cs" />
     <Compile Include="Components\SRenovation.cs" />
     <Compile Include="GDOs\DestroyWallProcess.cs" />
+    <Compile Include="GDOs\Doorstop.cs" />
     <Compile Include="GDOs\MobileWallDrill.cs" />
+    <Compile Include="GDOs\WallDrillDebug.cs" />
     <Compile Include="GDOs\WallDrill.cs" />
     <Compile Include="Main.cs" />
+    <Compile Include="Patches\DoorPatch.cs" />
     <Compile Include="Patches\LayoutViewPatch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Systems\DailyPurchaseableLocks.cs" />
