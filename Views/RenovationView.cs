@@ -18,16 +18,11 @@ namespace KitchenRenovation.Views
 
         // Cached
         public List<Liner> Liners = new();
-        public List<Door> OpenedDoors = new();
+        public List<Doorstop> Doorstops = new();
 
         // Prefabs
         [SerializeField] public GameObject LinerPrefab;
-        [SerializeField] public GameObject HatchPrefab;
-
-        public override void Initialise()
-        {
-            base.Initialise();
-        }
+        [SerializeField] public GameObject DoorstopPrefab;
 
         private ViewData Data = default;
         protected override void UpdateData(ViewData data)
@@ -48,6 +43,7 @@ namespace KitchenRenovation.Views
         public void CleanObjects()
         {
             CleanLiners();
+            CleanDoorstops();
         }
 
         public void CleanLiners()
@@ -61,6 +57,19 @@ namespace KitchenRenovation.Views
 
                 Destroy(liner.LinerObject);
                 Liners.RemoveAt(i);
+            }
+        }
+
+        public void CleanDoorstops()
+        {
+            for (int i = Doorstops.Count - 1; i >= 0; i--)
+            {
+                var stop = Doorstops[i];
+                if (Data.Doorstops.Any(p => stop.Tile == p))
+                    continue;
+
+                Destroy(stop.Attached);
+                Doorstops.RemoveAt(i);
             }
         }
 
@@ -136,12 +145,13 @@ namespace KitchenRenovation.Views
             var OpenerIndex = Data.Doorstops.FindIndex(p => p == Tile1 || p == Tile2);
             var shouldOpen = OpenerIndex != -1;
 
-            if (OpenedDoors.Contains(door))
+            var DoorIndex = Doorstops.FindIndex(p => p.Door.Equals(door));
+            if (DoorIndex != -1)
             {
                 if (shouldOpen)
                     return;
                 else
-                    OpenedDoors.Remove(door);
+                    Doorstops.RemoveAt(DoorIndex);
             }
 
             if (door.IsCurrentlyDisabled)
@@ -150,12 +160,25 @@ namespace KitchenRenovation.Views
             if (shouldOpen)
             {
                 Quaternion defaultRot = (Quaternion)ReflectionUtils.GetField<DoorController>("DoorDefaultRotation").GetValue(controller);
-
-                OpenedDoors.Add(door);
                 controller.ResetAngle();
                 var offset = Data.Doorstops[OpenerIndex] - door.DoorGameObject.transform.position;
                 var theta = Mathf.Atan2(offset.x, offset.z) * Mathf.Rad2Deg - (defaultRot.eulerAngles.y + door.DoorGameObject.transform.rotation.eulerAngles.y);
                 controller.TargetPosition = Math.Abs(theta) % 360 < 180 ? 135 : -135;
+
+                var gameObject = Instantiate(DoorstopPrefab);
+                gameObject.transform.SetParent(transform, false);
+                gameObject.transform.position = door.DoorGameObject.transform.position;
+                gameObject.transform.rotation = door.DoorGameObject.transform.rotation;
+
+                gameObject.GetComponent<FixedJoint>().connectedBody = controller.Hinge.gameObject.GetComponent<Rigidbody>();
+
+                var ds = new Doorstop
+                {
+                    Attached = gameObject,
+                    Door = door,
+                    Tile = Data.Doorstops[OpenerIndex]
+                };
+                Doorstops.Add(ds);
             }
 
             controller.SetSpring(shouldOpen);
@@ -176,9 +199,11 @@ namespace KitchenRenovation.Views
             public GameObject LinerObject;
         }
 
-        public struct Opener
+        public struct Doorstop
         {
-
+            public Door Door;
+            public GameObject Attached;
+            public Vector3 Tile;
         }
 
         [MessagePackObject]

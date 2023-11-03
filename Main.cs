@@ -82,6 +82,10 @@ namespace KitchenRenovation
             var liner = GetPrefab("Destroyed Wall");
             liner.ApplyMaterialToChild("Wall", "Metal");
             view.LinerPrefab = liner;
+
+            var doorstop = GetPrefab("Door Attachment");
+            doorstop.ApplyMaterialToChild("Stop", "Metal Black");
+            view.DoorstopPrefab = doorstop;
             
             return prefab;
         }
