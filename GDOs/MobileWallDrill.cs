@@ -25,32 +25,41 @@ namespace KitchenRenovation.GDOs
         {
             new CAllowMobilePathing(),
             new CDoesNotOccupy(),
-            new CFireImmune(),
             new CTakesDuration
             {
+                Total = 5,
                 Mode = InteractionMode.Items,
                 IsLocked = true,
             },
             new CDisplayDuration
             {
-                Process = GetCustomGameDataObject<DestroyWallProcess>().ID
+                Process = GetCustomGameDataObject<DestroyWallProcess>().ID,
+                IsBad = true,
             },
-            new CDestructiveAppliance
+            new CDestructive
             {
-                TileRange = 4f,
-                Speed = 0.3f,
-                DestroysAppliances = true,
-                DestroyApplianceTime = 5f,
-                DestroysWalls = true,
-                DestroyWallTime = 5f,
+                Multiplier = 1f,
+                TargetAppliances = true,
+                DestroyToWall = true,
+                TargetPosition = Vector3.right * 100,
+                ApplianceOffset = 0.2f,
+                WallOffset = 0f
             },
+            new CForwardMobile
+            {
+                IgnoreAppliances = true,
+                IgnoreWalls = true,
+                MaxDistance = 4,
+                Speed = 0.3f
+            },
+            new CInteractDisable()
         };
 
         public override GameObject Prefab => GetPrefab("Mobile Wall Drill");
         public override void SetupPrefab(GameObject prefab)
         {
             WallDrill.SetupDrillMaterials(prefab);
-            var view = prefab.TryAddComponent<DrillView>();
+            /*var view = prefab.TryAddComponent<DrillView>();
             view.Drill = prefab.transform.Find("Drill");
             view.Particles = prefab.GetChild("Particle").GetComponent<ParticleSystem>();
 
@@ -69,7 +78,7 @@ namespace KitchenRenovation.GDOs
                     }
                     break;
                 }
-            }
+            }*/
         }
     }
 }

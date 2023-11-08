@@ -1,12 +1,10 @@
-﻿using Kitchen;
-using KitchenData;
-using KitchenLib.Utils;
+﻿using KitchenLib.Utils;
 using TMPro;
 using UnityEngine;
 
 namespace KitchenRenovation.Utility
 {
-    public static class Extensions
+    public static class GameObjectExt
     {
         public static GameObject CreateLabel(this GameObject parent, string name, Vector3 position, Quaternion rotation, Material material, TMP_FontAsset font, float spacing, float size, string text)
         {

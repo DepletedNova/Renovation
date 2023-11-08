@@ -16,6 +16,7 @@ using KitchenLib.Views;
 using KitchenRenovation.Utility;
 using KitchenRenovation.Views;
 using System.Collections.Generic;
+using System;
 
 namespace KitchenRenovation
 {
@@ -30,9 +31,9 @@ namespace KitchenRenovation
         private static AssetBundle Bundle;
 
         // References
+        public static SoundEvent DestroySoundEvent;
         public static CustomViewType PurchaseView;
         public static CustomViewType RenovationView;
-        public static SoundEvent DestroySoundEvent;
 
         private void PostActivate()
         {
@@ -96,7 +97,7 @@ namespace KitchenRenovation
             Bundle.LoadAllAssets<Sprite>();
 
             var icons = Bundle.LoadAsset<TMP_SpriteAsset>("Icon Asset");
-            icons.material = Object.Instantiate(TMP_Settings.defaultSpriteAsset.material);
+            icons.material = UnityEngine.Object.Instantiate(TMP_Settings.defaultSpriteAsset.material);
             icons.material.mainTexture = Bundle.LoadAsset<Texture2D>("Icon Texture");
             TMP_Settings.defaultSpriteAsset.fallbackSpriteAssets.Add(icons);
 
@@ -137,11 +138,22 @@ namespace KitchenRenovation
                 if (!typeof(CustomGameDataObject).IsAssignableFrom(type))
                     continue;
 
-                MethodInfo generic = AddGDOMethod.MakeGenericMethod(type);
-                generic.Invoke(this, null);
+                AddGameDataObject(type);
                 counter++;
             }
             Log($"Registered {counter} GameDataObjects.");
+        }
+
+        public void AddGameDataObject(Type type)
+        {
+            if (type.IsAbstract || !type.IsClass || !type.IsSubclassOf(typeof(CustomGameDataObject)))
+                return;
+
+            CustomGameDataObject gdo = (CustomGameDataObject)Activator.CreateInstance(type);
+            gdo.ModID = ModID;
+            gdo.ModName = ModName;
+
+            CustomGDO.RegisterGameDataObject(gdo);
         }
 
         public interface IWontRegister { }
@@ -151,7 +163,7 @@ namespace KitchenRenovation
         public static T GetGDO<T>(int id) where T : GameDataObject => GDOUtils.GetExistingGDO(id) as T;
 
         public static GameObject GetPrefab(string name) => Bundle.LoadAsset<GameObject>(name);
-        public static T GetAsset<T>(string name) where T : Object => Bundle.LoadAsset<T>(name);
+        public static T GetAsset<T>(string name) where T : UnityEngine.Object => Bundle.LoadAsset<T>(name);
         #endregion
     }
 }

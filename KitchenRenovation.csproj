@@ -140,18 +140,18 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Components\CInteractDisable.cs" />
+    <Compile Include="Components\Mobiles\CMobileBase.cs" />
+    <Compile Include="Components\Mobiles\CSpawnSpecialMobile.cs" />
+    <Compile Include="Components\Mobiles\CForwardMobile.cs" />
+    <Compile Include="Components\Mobiles\CDestructive.cs" />
+    <Compile Include="Components\Walls\CWallTargetedBy.cs" />
     <Compile Include="Components\CDoorstop.cs" />
-    <Compile Include="Components\CNightObject.cs" />
-    <Compile Include="Components\Mobiles\CMobileShutoff.cs" />
-    <Compile Include="Components\Walls\CDestroyedWall.cs" />
+    <Compile Include="Components\Walls\CReaching.cs" />
+    <Compile Include="Components\Walls\CPlacedWall.cs" />
+    <Compile Include="Components\Walls\CRemovedWall.cs" />
     <Compile Include="Components\Walls\CTargetableWall.cs" />
-    <Compile Include="Components\Mobiles\CDestructiveAppliance.cs" />
-    <Compile Include="Components\Mobiles\CLinkedMobileBase.cs" />
-    <Compile Include="Components\Purchasing\CCanBeDailyPurchased.cs" />
     <Compile Include="Components\Purchasing\CCostIndicator.cs" />
-    <Compile Include="Components\Mobiles\CForceSpawn.cs" />
-    <Compile Include="Components\Purchasing\CHasDailyPurchase.cs" />
-    <Compile Include="Components\Purchasing\CSpawnBoughtAppliance.cs" />
     <Compile Include="Components\Walls\SRebuildReachability.cs" />
     <Compile Include="Components\SRenovation.cs" />
     <Compile Include="GDOs\DestroyWallProcess.cs" />
@@ -163,24 +163,21 @@
     <Compile Include="Patches\DoorPatch.cs" />
     <Compile Include="Patches\LayoutViewPatch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Systems\DailyPurchaseableLocks.cs" />
+    <Compile Include="Systems\ApplianceDestructionLock.cs" />
     <Compile Include="Systems\DestroyApplianceAfterDuration.cs" />
     <Compile Include="Systems\DestroyWallAfterDuration.cs" />
-    <Compile Include="Systems\DestructiveApplianceLocks.cs" />
     <Compile Include="Systems\EnsureRenovationView.cs" />
-    <Compile Include="Systems\InteractDisableMobile.cs" />
-    <Compile Include="Systems\ManageCostIndicators.cs" />
-    <Compile Include="Systems\MoveDestructiveAppliances.cs" />
-    <Compile Include="Systems\PurchaseApplianceAfterDuration.cs" />
+    <Compile Include="Systems\InteractDisable.cs" />
+    <Compile Include="Systems\ManageWallDurationIndicator.cs" />
+    <Compile Include="Systems\MoveForwardAppliances.cs" />
     <Compile Include="Systems\RebuildReachability.cs" />
-    <Compile Include="Systems\RemoveDailyPurchases.cs" />
-    <Compile Include="Systems\ShowPurchaseDisplay.cs" />
-    <Compile Include="Systems\SpawnBoughtAppliance.cs" />
-    <Compile Include="Utility\Extensions.cs" />
+    <Compile Include="Systems\SetDestructionTarget.cs" />
+    <Compile Include="Systems\SpawnSpecialMobiles.cs" />
+    <Compile Include="Systems\WallDestructionLock.cs" />
+    <Compile Include="Utility\GameObjectExt.cs" />
+    <Compile Include="Utility\GenericSystemBaseExt.cs" />
+    <Compile Include="Utility\Vector3Ext.cs" />
     <Compile Include="Views\CostIndicatorView.cs" />
-    <Compile Include="Views\DrillView.cs" />
-    <Compile Include="Views\NightObjectView.cs" />
-    <Compile Include="Views\PurchaseLightView.cs" />
     <Compile Include="Views\RenovationView.cs" />
   </ItemGroup>
   <ItemGroup />

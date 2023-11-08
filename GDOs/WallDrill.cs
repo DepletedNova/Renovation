@@ -51,24 +51,18 @@ namespace KitchenRenovation.GDOs
                 Mode = InteractionMode.Appliances,
                 ManualNeedsEmptyHands = true,
             },
-            new CSpawnBoughtAppliance
+            new CSpawnSpecialMobile
             {
-                MobileAppliance = GetCustomGameDataObject<MobileWallDrill>().ID
+                ID = GetCustomGameDataObject<MobileWallDrill>().ID
             },
-            new CCanBeDailyPurchased
-            {
-                Cost = 150
-            }
         };
 
         public override GameObject Prefab => GetPrefab("Wall Drill");
         public override void SetupPrefab(GameObject prefab)
         {
             prefab.ApplyMaterialToChild("Base", "Metal Very Dark");
-            
-            prefab.TryAddComponent<NightObjectView>().Object = SetupDrillMaterials(prefab.GetChild("Drill"));
-            prefab.TryAddComponent<PurchaseLightView>().Renderer = 
-                prefab.ApplyMaterialToChild("Light", "Indicator Light").GetComponent<MeshRenderer>();
+            prefab.ApplyMaterialToChild("Light", "Indicator Light");
+            SetupDrillMaterials(prefab.GetChild("Drill"));
         }
 
         internal static GameObject SetupDrillMaterials(GameObject prefab)

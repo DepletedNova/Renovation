@@ -172,13 +172,12 @@ namespace KitchenRenovation.Views
 
                 gameObject.GetComponent<FixedJoint>().connectedBody = controller.Hinge.gameObject.GetComponent<Rigidbody>();
 
-                var ds = new Doorstop
+                Doorstops.Add(new Doorstop
                 {
                     Attached = gameObject,
                     Door = door,
                     Tile = Data.Doorstops[OpenerIndex]
-                };
-                Doorstops.Add(ds);
+                });
             }
 
             controller.SetSpring(shouldOpen);
@@ -228,7 +227,7 @@ namespace KitchenRenovation.Views
 
                 ModifiedWalls = GetEntityQuery(new QueryHelper()
                     .All(typeof(CTargetableWall))
-                    .Any(typeof(CDestroyedWall)));
+                    .Any(typeof(CRemovedWall)));
                 Doorstops = GetEntityQuery(typeof(CDoorstop), typeof(CPosition));
 
                 Views = GetEntityQuery(typeof(SRenovation), typeof(CLinkedView));
@@ -244,7 +243,7 @@ namespace KitchenRenovation.Views
                 {
                     for (int i = 0; i < walls.Length; i++)
                     {
-                        if (!Has<CDestroyedWall>(walls[i]))
+                        if (!Has<CRemovedWall>(walls[i]))
                             continue;
 
                         var wall = GetComponent<CTargetableWall>(walls[i]);
@@ -253,11 +252,14 @@ namespace KitchenRenovation.Views
                 }
 
                 List<Vector3> openers = new();
-                using (var doorstops = Doorstops.ToComponentDataArray<CPosition>(Allocator.Temp))
+                if (HasSingleton<SIsDayTime>())
                 {
-                    foreach (var stop in doorstops)
+                    using (var doorstops = Doorstops.ToComponentDataArray<CPosition>(Allocator.Temp))
                     {
-                        openers.Add(stop.Position.Rounded());
+                        foreach (var stop in doorstops)
+                        {
+                            openers.Add(stop.Position.Rounded());
+                        }
                     }
                 }
                 

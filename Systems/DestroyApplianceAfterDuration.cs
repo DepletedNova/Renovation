@@ -2,37 +2,36 @@
 using KitchenRenovation.Components;
 using Unity.Collections;
 using Unity.Entities;
+using UnityEngine;
 
 namespace KitchenRenovation.Systems
 {
     public class DestroyApplianceAfterDuration : GameSystemBase
     {
-        private EntityQuery Mobiles;
+        EntityQuery Query;
         protected override void Initialise()
         {
             base.Initialise();
-            Mobiles = GetEntityQuery(typeof(CDestructiveAppliance), typeof(CTakesDuration));
+            Query = GetEntityQuery(typeof(CDestructive), typeof(CTakesDuration), ComponentType.Exclude<CIsInactive>(), ComponentType.Exclude<CIsOnFire>());
         }
 
         protected override void OnUpdate()
         {
-            using var entities = Mobiles.ToEntityArray(Allocator.Temp);
+            using var entities = Query.ToEntityArray(Allocator.Temp);
+            using var destructives = Query.ToComponentDataArray<CDestructive>(Allocator.Temp);
+            using var durations = Query.ToComponentDataArray<CTakesDuration>(Allocator.Temp);
             for (int i = 0; i < entities.Length; i++)
             {
-                var entity = entities[i];
-                var cDuration = GetComponent<CTakesDuration>(entity);
-                var cDestructive = GetComponent<CDestructiveAppliance>(entity);
-
-                Entity target = cDestructive.DestructionTarget;
-                if (!cDuration.Active || cDuration.Remaining > 0 || target == Entity.Null || !Has<CAppliance>(target))
+                var cDest = destructives[i];
+                var cDuration = durations[i];
+                if (!Has<CAppliance>(cDest.Target) || !cDuration.Active || cDuration.Remaining > 0)
                     continue;
 
-                cDestructive.DestructionTarget = Entity.Null;
-                Set(entity, cDestructive);
+                EntityManager.DestroyEntity(cDest.Target);
 
-                ECBs[ECB.DestructionGroup].CreateCommandBuffer().DestroyEntity(target);
-
-                CSoundEvent.Create(EntityManager, DestroySoundEvent);
+                cDest.Target = Entity.Null;
+                cDest.TargetPosition = Vector3.right * 100;
+                Set(entities[i], cDest);
             }
         }
     }

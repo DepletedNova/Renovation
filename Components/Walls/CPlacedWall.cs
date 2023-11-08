@@ -4,7 +4,7 @@ using Unity.Entities;
 namespace KitchenRenovation.Components
 {
     [StructLayout(LayoutKind.Sequential, Size = 1)]
-    public struct SRebuildReachability : IComponentData
+    public struct CPlacedWall : IComponentData
     {
     }
 }

@@ -1,11 +1,17 @@
 ﻿using Kitchen;
 using KitchenRenovation.Components;
-using UnityEngine;
+using KitchenRenovation.Utility;
 
 namespace KitchenRenovation.Systems
 {
     public class EnsureRenovationView : GameSystemBase
     {
+        protected override void Initialise()
+        {
+            base.Initialise();
+            GenericSystemBaseExt.Walls = GetEntityQuery(typeof(CTargetableWall), typeof(CPosition), typeof(CWallTargetedBy));
+        }
+
         protected override void OnUpdate()
         {
             if (HasSingleton<SRenovation>())

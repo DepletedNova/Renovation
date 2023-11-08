@@ -1,5 +1,6 @@
 ﻿using Kitchen;
 using KitchenRenovation.Components;
+using KitchenRenovation.Utility;
 using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;
@@ -10,11 +11,11 @@ namespace KitchenRenovation.Systems
 {
     public class RebuildReachability : GameSystemBase
     {
-        private EntityQuery Destroyed;
+        private EntityQuery Walls;
         protected override void Initialise()
         {
             base.Initialise();
-            Destroyed = GetEntityQuery(new QueryHelper().Any(typeof(CDestroyedWall)).All(typeof(CTargetableWall)));
+            Walls = GetEntityQuery(typeof(CTargetableWall));
             RequireSingletonForUpdate<SRebuildReachability>();
             RequireSingletonForUpdate<SLayout>();
         }
@@ -23,21 +24,27 @@ namespace KitchenRenovation.Systems
         {
             Clear<SRebuildReachability>();
 
-            using var walls = Destroyed.ToComponentDataArray<CTargetableWall>(Allocator.Temp);
+            using var entities = Walls.ToEntityArray(Allocator.Temp);
             var layout = GetSingletonEntity<SLayout>();
             var tiles = GetBuffer<CLayoutRoomTile>(layout);
             var features = GetBuffer<CLayoutFeature>(layout);
-            for (int i = 0; i < walls.Length; i++)
+            for (int i = 0; i < entities.Length; i++)
             {
-                var wall = walls[i];
+                var entity = entities[i];
+                var wall = GetComponent<CTargetableWall>(entity);
+
+                var unblocked = Has<CRemovedWall>(entity) || Has<CReaching>(entity);
+
+                if (!unblocked && !Has<CPlacedWall>(entity))
+                    continue;
 
                 // Direct
                 for (int i2 = 0; i2 < tiles.Length; i2++)
                 {
                     var tile = tiles[i2];
 
-                    UpdateDirect(ref tile, wall.Tile2, wall.Tile1);
-                    UpdateDirect(ref tile, wall.Tile1, wall.Tile2);
+                    UpdateDirect(ref tile, wall.Tile2, wall.Tile1, unblocked);
+                    UpdateDirect(ref tile, wall.Tile1, wall.Tile2, unblocked);
 
                     tiles[i2] = tile;
                 }
@@ -47,8 +54,8 @@ namespace KitchenRenovation.Systems
                 {
                     var tile = tiles[i2];
 
-                    UpdateForDiagonal(ref tile, wall.Tile1, wall.Tile2);
-                    UpdateForDiagonal(ref tile, wall.Tile2, wall.Tile1);
+                    UpdateForDiagonal(ref tile, wall.Tile1, wall.Tile2, unblocked);
+                    UpdateForDiagonal(ref tile, wall.Tile2, wall.Tile1, unblocked);
                     UpdateDiagonal(ref tile, wall.Tile1, wall.Tile2);
                     UpdateDiagonal(ref tile, wall.Tile2, wall.Tile1);
 
@@ -83,29 +90,40 @@ namespace KitchenRenovation.Systems
         public bool IsDiagonal(Vector3 from, Vector3 to) => 
             Mathf.Abs(to.x - from.x) == 1 && Mathf.Abs(to.z - from.z) == 1;
 
-        public void UpdateDirect(ref CLayoutRoomTile tile, Vector3 from, Vector3 to)
+        public void UpdateDirect(ref CLayoutRoomTile tile, Vector3 from, Vector3 to, bool unblocked)
         {
             if (tile.Position != from)
                 return;
 
-            var forward = to - from;
-            tile.Reachability[(int)forward.x, (int)forward.z] = true;
+            tile.Reachability[(int)(to.x - from.x), (int)(to.z - from.z)] = unblocked;
         }
 
-        public void UpdateForDiagonal(ref CLayoutRoomTile tile, Vector3 from, Vector3 to)
+        public void UpdateForDiagonal(ref CLayoutRoomTile tile, Vector3 from, Vector3 to, bool unblocked)
         {
             if (tile.Position != from)
                 return;
 
-            var offset = to - from;
-            var offsetTile = GetTile(to);
-            int x = (int)(offset.z != 0 ? offset.z : 0);
-            int z = (int)(offset.x != 0 ? offset.x : 0);
+            var offset = (to - from).ToInt();
 
-            tile.Reachability[(int)offset.x + x, (int)offset.z + z] |=
-                offsetTile.Reachability[x, z];
-            tile.Reachability[(int)offset.x - x, (int)offset.z - z] |=
-                offsetTile.Reachability[-x, -z];
+            var z1Tile = GetTile(new Vector3(from.x + offset.z, 0, from.z + offset.x));
+            var z1Reach =
+                z1Tile.Reachability[offset.x, offset.z] &&
+                z1Tile.Reachability[-offset.z, -offset.x];
+
+            var z2Tile = GetTile(new Vector3(from.x - offset.z, 0, from.z - offset.x));
+            var z2Reach =
+                z2Tile.Reachability[offset.x, offset.z] &&
+                z2Tile.Reachability[offset.z, offset.x];
+
+            if (unblocked)
+            {
+                var toTile = GetTile(to);
+                z1Reach |= toTile.Reachability[offset.z, offset.x];
+                z2Reach |= toTile.Reachability[-offset.z, -offset.x];
+            }
+
+            tile.Reachability[offset.x + offset.z, offset.z + offset.x] = z1Reach;
+            tile.Reachability[offset.x - offset.z, offset.z - offset.x] = z2Reach;
         }
 
         public void UpdateDiagonal(ref CLayoutRoomTile tile, Vector3 near, Vector3 far)
@@ -113,10 +131,13 @@ namespace KitchenRenovation.Systems
             if (!IsDiagonal(tile.Position, far))
                 return;
 
-            tile.Reachability[(int)(far.x - tile.Position.x), (int)(far.z - tile.Position.z)] |=
-                tile.Reachability[(int)(near.x - tile.Position.x), (int)(near.z - tile.Position.z)];
-        }
+            var offset = (far - near).ToInt();
+            var farTile = GetTile(far);
 
+            tile.Reachability[(int)(far.x - tile.Position.x), (int)(far.z - tile.Position.z)] =
+                (tile.Reachability[offset.z, offset.x] && farTile.Reachability[-offset.x, -offset.z]) ||
+                (tile.Reachability[offset.x, offset.z] && farTile.Reachability[-offset.z, -offset.x]);
+        }
 
     }
 }
