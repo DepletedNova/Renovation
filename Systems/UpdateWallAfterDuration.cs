@@ -33,21 +33,23 @@ namespace KitchenRenovation.Systems
 
                 // Check type of interaction
                 bool shouldCreate = false;
+                bool shouldDestroy = false;
                 bool removeToHatch = false;
                 bool dontCreateHatch = false;
                 for (int i2 = 0; i2 < buffer.Length; i2++)
                 {
                     var item = buffer[i2];
                     shouldCreate |= item.Create;
+                    shouldDestroy |= item.Destroy;
                     removeToHatch |= item.Hatch && item.Destroy;
                     dontCreateHatch |= !item.Hatch && item.Create;
                 }
 
-                if (!shouldCreate && !Has<CRemovedWall>(entity)) // Destroy
+                if (shouldDestroy && !Has<CRemovedWall>(entity)) // Destroy
                 {
-                    if (!Has<CReaching>(entity) && removeToHatch)
+                    if (removeToHatch)
                         Set<CReaching>(entity);
-                    else if (!removeToHatch)
+                    else
                         Set<CRemovedWall>(entity);
                 } 
                 else if (shouldCreate) // Create
@@ -56,7 +58,7 @@ namespace KitchenRenovation.Systems
                 }
 
                 // Clear out and reset interactors
-                for (int i2 = buffer.Length; i2 >= 0; i2--)
+                for (int i2 = buffer.Length - 1; i2 >= 0; i2--)
                 {
                     var interactor = buffer[i2].Interactor;
                     if (Require(interactor, out CDestructive cDest))

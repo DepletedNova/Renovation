@@ -9,6 +9,7 @@ using UnityEngine.UIElements;
 
 namespace KitchenRenovation.Systems
 {
+    [UpdateBefore(typeof(UpdateWallAfterDuration))]
     public class SetDestructionTarget : GameSystemBase
     {
         EntityQuery Query;
@@ -31,19 +32,14 @@ namespace KitchenRenovation.Systems
                 var entity = entities[i];
                 if (cDest.Target != Entity.Null)
                 {
-                    if ((!Has<CTargetableWall>(cDest.Target) && !Has<CAppliance>(cDest.Target)))
+                    if ((!Has<CTargetableWall>(cDest.Target) && !Has<CAppliance>(cDest.Target)) ||
+                        Has<CRemovedWall>(cDest.Target))
                     {
                         cDest.Target = Entity.Null;
                         cDest.TargetPosition = Vector3.right * 100;
                         Set(entity, cDest);
                     }
                     continue;
-                }
-
-                if (cDest.Target == Entity.Null)
-                {
-                    cDest.TargetPosition = Vector3.right * 100;
-                    Set(entity, cDest);
                 }
 
                 var rounded = cPos.Position.Rounded();
@@ -75,6 +71,7 @@ namespace KitchenRenovation.Systems
                     cDest.TargetPosition = rounded - cPos.Forward(cDest.WallOffset);
                     cDest.Target = target;
                     Set(entity, cDest);
+                    LogInfo("derp");
                     continue;
                 }
 

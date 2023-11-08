@@ -9,7 +9,7 @@ namespace KitchenRenovation.Systems
     [UpdateInGroup(typeof(DurationLocks))]
     public class WallDestructionLock : GameSystemBase
     {
-        private const int DestroyWallDuration = 60;
+        private const int DestroyWallDuration = 15;
 
         private EntityQuery Walls;
         protected override void Initialise()
