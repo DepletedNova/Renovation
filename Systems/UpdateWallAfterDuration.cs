@@ -43,6 +43,14 @@ namespace KitchenRenovation.Systems
                     shouldDestroy |= item.Destroy;
                     removeToHatch |= item.Hatch && item.Destroy;
                     dontCreateHatch |= !item.Hatch && item.Create;
+
+                    // Clear buffer
+                    if (Require(item.Interactor, out CDestructive cDest))
+                    {
+                        cDest.Target = Entity.Null;
+                        cDest.TargetPosition = Vector3.right * 100;
+                        Set(item.Interactor, cDest);
+                    }
                 }
 
                 if (shouldDestroy && !Has<CRemovedWall>(entity)) // Destroy
@@ -55,18 +63,6 @@ namespace KitchenRenovation.Systems
                 else if (shouldCreate) // Create
                 {
                     // fix this bogus
-                }
-
-                // Clear out and reset interactors
-                for (int i2 = buffer.Length - 1; i2 >= 0; i2--)
-                {
-                    var interactor = buffer[i2].Interactor;
-                    if (Require(interactor, out CDestructive cDest))
-                    {
-                        cDest.Target = Entity.Null;
-                        cDest.TargetPosition = Vector3.right * 100;
-                        Set(interactor, cDest);
-                    }
                 }
 
                 buffer.Clear();
