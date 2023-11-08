@@ -23,7 +23,8 @@ namespace KitchenRenovation.Systems
             {
                 var entity = entities[i];
 
-                // Conditions
+                if (Has<CPurchaseable>(entity) && !Has<CHasPurchase>(entity))
+                    continue;
 
                 var cPos = positions[i];
                 var cMobile = mobiles[i];

@@ -44,7 +44,7 @@ namespace KitchenRenovation.Systems
                     if ((cPosition.Position - rounded).Chebyshev() < 0.1f)
                     {
                         var forward = rounded + cPosition.Forward(-1f);
-                        if (!cForward.IgnoreAppliances)
+                        if (!cForward.IgnoreAppliances || !PrefManager.Get<bool>("DestroyAppliance"))
                         {
                             var occupant = GetOccupant(forward);
                             if (occupant != Entity.Null && !Has<CAllowMobilePathing>() && Has<CAppliance>(occupant))
@@ -54,9 +54,13 @@ namespace KitchenRenovation.Systems
                             }
                         }
 
+                        var cT = GetTile(rounded);
+                        var fT = GetTile(forward);
+
                         if (!cForward.IgnoreWalls &&
+                            (cT.Type == RoomType.NoRoom || fT.Type == RoomType.NoRoom || cT.Type == RoomType.Unassigned || fT.Type == RoomType.Unassigned) &&
                             (!this.TryGetFeature(rounded, forward, out var feature) || !feature.Type.IsDoor()) &&
-                            this.GetTargetableFeature(GetTile(rounded), GetTile(forward), out var _))
+                            this.GetTargetableFeature(cT, fT, out var _))
                         {
                             Set<CIsInactive>(entity);
                             continue;

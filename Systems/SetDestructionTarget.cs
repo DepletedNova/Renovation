@@ -35,9 +35,6 @@ namespace KitchenRenovation.Systems
                     if ((!Has<CTargetableWall>(cDest.Target) && !Has<CAppliance>(cDest.Target)) ||
                         Has<CRemovedWall>(cDest.Target))
                     {
-                        LogInfo("removing info");
-                        LogInfo(entity.Index);
-                        LogInfo(cDest.Target.Index);
                         cDest.Target = Entity.Null;
                         cDest.TargetPosition = Vector3.right * 100;
                         Set(entity, cDest);
@@ -50,7 +47,9 @@ namespace KitchenRenovation.Systems
                     continue;
 
                 var forward = rounded - cPos.Forward(1f);
-                if ((!this.TryGetFeature(rounded, forward, out var feature) || !feature.Type.IsDoor()) &&
+                var fO = GetOccupant(forward);
+
+                if ((!this.TryGetFeature(rounded, forward, out var feature) || !feature.Type.IsDoor() || fO != Entity.Null) &&
                     this.GetTargetableFeature(GetTile(rounded), GetTile(forward), out var target) && Has<CTargetableWall>(target) && !Has<CRemovedWall>(target))
                 {
                     if (!cDest.DestroyToWall && (feature.Type.IsReaching() || Has<CReaching>(target)))
@@ -77,14 +76,14 @@ namespace KitchenRenovation.Systems
                     continue;
                 }
 
-                if (!cDest.TargetAppliances || false) // replace false with preference
+                if (!cDest.TargetAppliances || !PrefManager.Get<bool>("DestroyAppliance")) // replace false with preference
                     continue;
 
-                var occupant = GetOccupant(forward);
-                if (Has<CAppliance>(occupant) && !Has<CAllowMobilePathing>(occupant))
+                if (Has<CAppliance>(fO) && !Has<CAllowMobilePathing>(fO) && 
+                    !Has<CApplianceChair>(fO) && !Has<CApplianceTable>(fO) && !Has<CApplianceHostStand>(fO))
                 {
                     cDest.TargetPosition = rounded - cPos.Forward(cDest.ApplianceOffset);
-                    cDest.Target = occupant;
+                    cDest.Target = fO;
                     Set(entity, cDest);
                     continue;
                 }

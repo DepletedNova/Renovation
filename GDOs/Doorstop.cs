@@ -35,13 +35,14 @@ namespace KitchenRenovation.GDOs
         {
             new CFixedRotation(),
             new CDoorstop(),
-            new CFireImmune()
+            new CFireImmune(),
+            new CNightObject(),
         };
 
         public override GameObject Prefab => GetPrefab("Doorstop");
         public override void SetupPrefab(GameObject prefab)
         {
-            var stop = prefab.ApplyMaterialToChild("Stop", "Metal Black");
+            prefab.TryAddComponent<NightObjectView>().Object = prefab.ApplyMaterialToChild("Stop", "Metal Black");
         }
     }
 }

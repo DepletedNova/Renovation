@@ -27,8 +27,8 @@ namespace KitchenRenovation.Systems
                     var entity = entities[i];
                     var buffer = GetBuffer<CWallTargetedBy>(entity);
 
-                    bool anyOnFire = false;
-                    float total = DestroyWallDuration;
+                    int amountOnFire = 0;
+                    float total = PrefManager.Get<float>("DestroyWallTime");
                     for (int i2 = buffer.Length - 1; i2 >= 0; i2--)
                     {
                         var interactor = buffer[i2].Interactor;
@@ -39,13 +39,17 @@ namespace KitchenRenovation.Systems
                             continue;
                         }
 
-                        anyOnFire |= Has<CIsOnFire>(interactor);
+                        if (Has<CIsOnFire>(interactor))
+                        {
+                            amountOnFire++;
+                            continue;
+                        }
 
                         total /= cDestructive.Multiplier;
                     }
 
                     var cDuration = GetComponent<CTakesDuration>(entity);
-                    cDuration.IsLocked = buffer.IsEmpty || anyOnFire || Has<CRemovedWall>(entity);
+                    cDuration.IsLocked = buffer.IsEmpty || buffer.Length - amountOnFire <= 0 || Has<CRemovedWall>(entity);
 
                     if (!cDuration.IsLocked)
                     {

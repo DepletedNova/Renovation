@@ -17,6 +17,7 @@ using KitchenRenovation.Utility;
 using KitchenRenovation.Views;
 using System.Collections.Generic;
 using System;
+using PreferenceSystem;
 
 namespace KitchenRenovation
 {
@@ -28,6 +29,7 @@ namespace KitchenRenovation
 
         public Main() : base(GUID, NAME, "Zoey Davis", VERSION, ">=1.0.0", Assembly.GetExecutingAssembly()) { }
 
+        public static PreferenceSystemManager PrefManager;
         private static AssetBundle Bundle;
 
         // References
@@ -37,6 +39,7 @@ namespace KitchenRenovation
 
         private void PostActivate()
         {
+            SetupMenu();
             AddIcons();
 
             PurchaseView = AddViewType("PurchaseView", SetupPurchaseView);
@@ -71,7 +74,7 @@ namespace KitchenRenovation
             var prefab = GetPrefab("Purchase Indicator");
             prefab.TryAddComponent<CostIndicatorView>().Text =
                 prefab.CreateLabel("Coins", Vector3.zero, Quaternion.identity, MaterialUtils.GetExistingMaterial("Alphakind Atlas Material"), FontUtils.GetExistingTMPFont("Large Text"),
-                0, 2f, "<color=#ff1111>999 <sprite name=\"coin\" color=#FF9800>").GetComponent<TextMeshPro>();
+                0, 1.75f, "<color=#ff1111>999 <sprite name=\"coin\" color=#FF9800>").GetComponent<TextMeshPro>();
             return prefab;
         }
 
@@ -103,6 +106,21 @@ namespace KitchenRenovation
 
             Log("Registered icons");
         }
+
+        #region Menu
+        private void SetupMenu()
+        {
+            PrefManager = new(GUID, "Renovated");
+
+            PrefManager
+                .AddLabel("Appliance Destruction")
+                .AddOption("DestroyAppliance", true, new bool[] { false, true }, new string[] { "Disabled", "Enabled" })
+                .AddLabel("Destroy Wall Time")
+                .AddOption("DestroyWallTime", 30f, new float[] { 10f, 20f, 30f, 40f, 50f, 60f }, new string[] { "10s", "20s", "30s", "40s", "50s", "60s" });
+
+            PrefManager.RegisterMenu(PreferenceSystemManager.MenuType.PauseMenu);
+        }
+        #endregion
 
         #region Logging
         internal static void LogInfo(string msg) { Debug.Log($"[{NAME}] " + msg); }

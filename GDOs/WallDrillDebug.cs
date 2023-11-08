@@ -1,6 +1,7 @@
 ﻿using Kitchen;
 using KitchenData;
 using KitchenLib.Customs;
+using KitchenLib.References;
 using KitchenLib.Utils;
 using KitchenRenovation.Components;
 using KitchenRenovation.Views;
@@ -25,7 +26,7 @@ namespace KitchenRenovation.GDOs
                 {
                     Title = "Driller",
                     Description = "Drives forward during the day and destroys both appliances and walls",
-                    RangeDescription = "<sprite name=\"range\"> 4 Tiles"
+                    RangeDescription = "<sprite name=\"range\"> 6 Tiles"
                 },
                 new()
                 {
@@ -46,10 +47,14 @@ namespace KitchenRenovation.GDOs
                 Mode = InteractionMode.Appliances,
                 ManualNeedsEmptyHands = true,
             },
+            new CDisplayDuration
+            {
+                Process = ProcessReferences.Purchase
+            },
             new CSpawnSpecialMobile
             {
                 ID = GetCustomGameDataObject<MobileWallDrill>().ID
-            },
+            }
         };
 
         public override GameObject Prefab => GetPrefab("Wall Drill");
