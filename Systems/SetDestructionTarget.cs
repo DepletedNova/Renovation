@@ -35,6 +35,9 @@ namespace KitchenRenovation.Systems
                     if ((!Has<CTargetableWall>(cDest.Target) && !Has<CAppliance>(cDest.Target)) ||
                         Has<CRemovedWall>(cDest.Target))
                     {
+                        LogInfo("removing info");
+                        LogInfo(entity.Index);
+                        LogInfo(cDest.Target.Index);
                         cDest.Target = Entity.Null;
                         cDest.TargetPosition = Vector3.right * 100;
                         Set(entity, cDest);
@@ -71,7 +74,6 @@ namespace KitchenRenovation.Systems
                     cDest.TargetPosition = rounded - cPos.Forward(cDest.WallOffset);
                     cDest.Target = target;
                     Set(entity, cDest);
-                    LogInfo("derp");
                     continue;
                 }
 

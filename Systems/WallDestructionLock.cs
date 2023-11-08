@@ -45,7 +45,7 @@ namespace KitchenRenovation.Systems
                     }
 
                     var cDuration = GetComponent<CTakesDuration>(entity);
-                    cDuration.IsLocked = buffer.IsEmpty || anyOnFire;
+                    cDuration.IsLocked = buffer.IsEmpty || anyOnFire || Has<CRemovedWall>(entity);
 
                     if (!cDuration.IsLocked)
                     {

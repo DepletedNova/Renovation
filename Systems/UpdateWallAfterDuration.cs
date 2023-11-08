@@ -44,7 +44,7 @@ namespace KitchenRenovation.Systems
                     removeToHatch |= item.Hatch && item.Destroy;
                     dontCreateHatch |= !item.Hatch && item.Create;
 
-                    // Clear buffer
+                    // Clear buffer items
                     if (Require(item.Interactor, out CDestructive cDest))
                     {
                         cDest.Target = Entity.Null;
@@ -65,7 +65,6 @@ namespace KitchenRenovation.Systems
                     // fix this bogus
                 }
 
-                buffer.Clear();
                 Set<SRebuildReachability>();
             }
         }
