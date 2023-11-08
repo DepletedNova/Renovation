@@ -49,8 +49,11 @@ namespace KitchenRenovation.Systems
                 var forward = rounded - cPos.Forward(1f);
                 var fO = GetOccupant(forward);
 
+                var cT = GetTile(rounded);
+                var fT = GetTile(forward);
+
                 if ((!this.TryGetFeature(rounded, forward, out var feature) || !feature.Type.IsDoor() || fO != Entity.Null) &&
-                    this.GetTargetableFeature(GetTile(rounded), GetTile(forward), out var target) && Has<CTargetableWall>(target) && !Has<CRemovedWall>(target))
+                    this.GetTargetableFeature(cT, fT, out var target) && Has<CTargetableWall>(target) && !Has<CRemovedWall>(target))
                 {
                     if (!cDest.DestroyToWall && (feature.Type.IsReaching() || Has<CReaching>(target)))
                     {
@@ -79,9 +82,14 @@ namespace KitchenRenovation.Systems
                 if (!cDest.TargetAppliances || !PrefManager.Get<bool>("DestroyAppliance")) // replace false with preference
                     continue;
 
-                if (Has<CAppliance>(fO) && !Has<CAllowMobilePathing>(fO) && 
-                    !Has<CApplianceChair>(fO) && !Has<CApplianceTable>(fO) && !Has<CApplianceHostStand>(fO))
+                if (Has<CAppliance>(fO) && !Has<CAllowMobilePathing>(fO))
                 {
+                    if (Has<CApplianceChair>(fO) || Has<CApplianceTable>(fO) || Has<CApplianceHostStand>(fO))
+                    {
+                        Set<CIsInactive>(entity);
+                        continue;
+                    }
+
                     cDest.TargetPosition = rounded - cPos.Forward(cDest.ApplianceOffset);
                     cDest.Target = fO;
                     Set(entity, cDest);

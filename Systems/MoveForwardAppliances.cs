@@ -44,23 +44,22 @@ namespace KitchenRenovation.Systems
                     if ((cPosition.Position - rounded).Chebyshev() < 0.1f)
                     {
                         var forward = rounded + cPosition.Forward(-1f);
-                        if (!cForward.IgnoreAppliances || !PrefManager.Get<bool>("DestroyAppliance"))
+                        var occupant = GetOccupant(forward);
+
+                        if (occupant != Entity.Null && Has<CAppliance>(occupant) && 
+                            (((!cForward.IgnoreAppliances || !PrefManager.Get<bool>("DestroyAppliance")) && !Has<CAllowMobilePathing>(occupant)) || 
+                            Has<CApplianceChair>(occupant) || Has<CApplianceTable>(occupant) || Has<CApplianceHostStand>(occupant)))
                         {
-                            var occupant = GetOccupant(forward);
-                            if (occupant != Entity.Null && !Has<CAllowMobilePathing>() && Has<CAppliance>(occupant))
-                            {
-                                Set<CIsInactive>(entity);
-                                continue;
-                            }
+                            Set<CIsInactive>(entity);
+                            continue;
                         }
 
                         var cT = GetTile(rounded);
                         var fT = GetTile(forward);
 
-                        if (!cForward.IgnoreWalls &&
-                            (cT.Type == RoomType.NoRoom || fT.Type == RoomType.NoRoom || cT.Type == RoomType.Unassigned || fT.Type == RoomType.Unassigned) &&
+                        if (cT.Type == RoomType.NoRoom || fT.Type == RoomType.NoRoom || (!cForward.IgnoreWalls &&
                             (!this.TryGetFeature(rounded, forward, out var feature) || !feature.Type.IsDoor()) &&
-                            this.GetTargetableFeature(cT, fT, out var _))
+                            this.GetTargetableFeature(cT, fT, out var _)))
                         {
                             Set<CIsInactive>(entity);
                             continue;

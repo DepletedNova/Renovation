@@ -16,7 +16,8 @@ namespace KitchenRenovation.Utility
         public static bool GetTargetableFeature(this GenericSystemBase system, CLayoutRoomTile from, CLayoutRoomTile to, out Entity entity)
         {
             entity = default;
-            if (Walls == default)
+            if (Walls == default || 
+                from.Type == RoomType.NoRoom || to.Type == RoomType.NoRoom)
                 return false;
 
             var EM = system.EntityManager;

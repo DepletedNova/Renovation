@@ -14,7 +14,7 @@ namespace KitchenRenovation.Systems
         protected override bool ShouldHaveIndicator(Entity candidate) =>
             Has<SIsNightTime>() &&
             !Has<CHasPurchase>(candidate) && !Has<CHeldBy>(candidate) &&
-            Require(candidate, out CTakesDuration cDuration) && cDuration.Remaining >= cDuration.Total;
+            Require(candidate, out CTakesDuration cDuration) && cDuration.Active && (cDuration.Remaining == cDuration.Total || cDuration.Remaining == 0 || cDuration.IsLocked);
 
         protected override Entity CreateIndicator(Entity source)
         {

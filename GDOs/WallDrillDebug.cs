@@ -2,9 +2,7 @@
 using KitchenData;
 using KitchenLib.Customs;
 using KitchenLib.References;
-using KitchenLib.Utils;
 using KitchenRenovation.Components;
-using KitchenRenovation.Views;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -28,12 +26,6 @@ namespace KitchenRenovation.GDOs
                     Description = "Drives forward during the day and destroys both appliances and walls",
                     RangeDescription = "<sprite name=\"range\"> 6 Tiles"
                 },
-                new()
-                {
-                    Title = "Not Fueled",
-                    Description = "Doesn't require payment per day of use",
-                    RangeDescription = "<sprite name=\"coin\"> :)"
-                },
             }, new()))
         };
 
@@ -54,7 +46,8 @@ namespace KitchenRenovation.GDOs
             new CSpawnSpecialMobile
             {
                 ID = GetCustomGameDataObject<MobileWallDrill>().ID
-            }
+            },
+            new CNightObject()
         };
 
         public override GameObject Prefab => GetPrefab("Wall Drill");

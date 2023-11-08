@@ -11,8 +11,6 @@ namespace KitchenRenovation.GDOs
 {
     internal class Doorstop : CustomAppliance
     {
-        private static readonly int Image = Shader.PropertyToID("_Image");
-
         public override string UniqueNameID => "Doorstopper";
         public override List<(Locale, ApplianceInfo)> InfoList => new()
         {
@@ -27,7 +25,7 @@ namespace KitchenRenovation.GDOs
         };
         public override bool IsPurchasable => true;
         public override PriceTier PriceTier => PriceTier.Medium;
-        public override RarityTier RarityTier => RarityTier.Rare;
+        public override RarityTier RarityTier => RarityTier.Uncommon;
         public override ShoppingTags ShoppingTags => ShoppingTags.Misc;
         public override OccupancyLayer Layer => OccupancyLayer.Floor;
 

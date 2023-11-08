@@ -13,7 +13,7 @@ namespace KitchenRenovation.Systems
 
         protected override bool ShouldHaveIndicator(Entity candidate) =>
             Require(candidate, out CTakesDuration cDuration) && Require(candidate, out CDisplayDuration cDisplay) &&
-            (cDisplay.ShowWhenEmpty || cDuration.Remaining < cDuration.Total);
+            (cDisplay.ShowWhenEmpty || cDuration.Remaining < cDuration.Total) && cDuration.Remaining > 0;
 
         protected override Entity CreateIndicator(Entity source)
         {

@@ -25,7 +25,7 @@ namespace KitchenRenovation
     {
         public const string NAME = "Renovation";
         public const string GUID = "nova.renovation";
-        public const string VERSION = "1.0.0";
+        public const string VERSION = "0.1.0";
 
         public Main() : base(GUID, NAME, "Zoey Davis", VERSION, ">=1.0.0", Assembly.GetExecutingAssembly()) { }
 
@@ -107,7 +107,6 @@ namespace KitchenRenovation
             Log("Registered icons");
         }
 
-        #region Menu
         private void SetupMenu()
         {
             PrefManager = new(GUID, "Renovated");
@@ -120,7 +119,6 @@ namespace KitchenRenovation
 
             PrefManager.RegisterMenu(PreferenceSystemManager.MenuType.PauseMenu);
         }
-        #endregion
 
         #region Logging
         internal static void LogInfo(string msg) { Debug.Log($"[{NAME}] " + msg); }
