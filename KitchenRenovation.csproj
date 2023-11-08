@@ -165,7 +165,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Systems\ApplianceDestructionLock.cs" />
     <Compile Include="Systems\DestroyApplianceAfterDuration.cs" />
-    <Compile Include="Systems\DestroyWallAfterDuration.cs" />
+    <Compile Include="Systems\UpdateWallAfterDuration.cs" />
     <Compile Include="Systems\EnsureRenovationView.cs" />
     <Compile Include="Systems\InteractDisable.cs" />
     <Compile Include="Systems\ManageWallDurationIndicator.cs" />

@@ -36,7 +36,7 @@ namespace KitchenRenovation.Systems
                         continue;
                     }
 
-                    if (Require(entity, out CDestructive cDestructive) && (cPosition.Position - cDestructive.TargetPosition).Chebyshev() < 0.1f)
+                    if (Require(entity, out CDestructive cDestructive) && cDestructive.Target != Entity.Null && (cPosition.Position - cDestructive.TargetPosition).Chebyshev() < 0.1f)
                         continue;
 
                     var rounded = cPosition.Position.Rounded();

@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace KitchenRenovation.Systems
 {
-    public class DestroyWallAfterDuration : GameSystemBase
+    public class UpdateWallAfterDuration : GameSystemBase
     {
         EntityQuery Query;
         protected override void Initialise()
@@ -34,13 +34,13 @@ namespace KitchenRenovation.Systems
                 // Check type of interaction
                 bool shouldCreate = false;
                 bool removeToHatch = false;
-                bool createHatch = false;
+                bool dontCreateHatch = false;
                 for (int i2 = 0; i2 < buffer.Length; i2++)
                 {
                     var item = buffer[i2];
                     shouldCreate |= item.Create;
                     removeToHatch |= item.Hatch && item.Destroy;
-                    createHatch |= item.Hatch && item.Create;
+                    dontCreateHatch |= !item.Hatch && item.Create;
                 }
 
                 if (!shouldCreate && !Has<CRemovedWall>(entity)) // Destroy
@@ -49,16 +49,10 @@ namespace KitchenRenovation.Systems
                         Set<CReaching>(entity);
                     else if (!removeToHatch)
                         Set<CRemovedWall>(entity);
-                } else 
-                if (shouldCreate) // Create
+                } 
+                else if (shouldCreate) // Create
                 {
-                    if (Has<CRemovedWall>(entity))
-                        EntityManager.RemoveComponent<CRemovedWall>(entity);
-                    if (createHatch)
-                        Set<CReaching>(entity);
-                    else if (!createHatch && Has<CReaching>(entity))
-                        EntityManager.RemoveComponent<CRemovedWall>(entity);
-                    Set<CPlacedWall>(entity);
+                    // fix this bogus
                 }
 
                 // Clear out and reset interactors
