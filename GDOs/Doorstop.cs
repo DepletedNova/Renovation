@@ -9,8 +9,10 @@ using UnityEngine;
 
 namespace KitchenRenovation.GDOs
 {
-    internal class Doorstop : CustomAppliance
+    public class Doorstop : CustomAppliance, IHavePreference
     {
+        public string PreferenceName() => "Doorstop";
+
         public override string UniqueNameID => "Doorstopper";
         public override List<(Locale, ApplianceInfo)> InfoList => new()
         {
@@ -38,6 +40,7 @@ namespace KitchenRenovation.GDOs
         };
 
         public override GameObject Prefab => GetPrefab("Doorstop");
+
         public override void SetupPrefab(GameObject prefab)
         {
             prefab.TryAddComponent<NightObjectView>().Object = prefab.ApplyMaterialToChild("Stop", "Metal Black");

@@ -18,6 +18,7 @@ using KitchenRenovation.Views;
 using System.Collections.Generic;
 using System;
 using PreferenceSystem;
+using KitchenRenovation.Components;
 
 namespace KitchenRenovation
 {
@@ -36,6 +37,7 @@ namespace KitchenRenovation
         public static SoundEvent DestroySoundEvent;
         public static CustomViewType PurchaseView;
         public static CustomViewType RenovationView;
+        public static CustomViewType ParticleEventView;
 
         private void PostActivate()
         {
@@ -44,11 +46,13 @@ namespace KitchenRenovation
 
             PurchaseView = AddViewType("PurchaseView", SetupPurchaseView);
             RenovationView = AddViewType("RenovationView", SetupRenovationView);
+            ParticleEventView = AddViewType("ParticleEvent", SetupParticleEventView);
         }
 
         private void BuildGameData(GameData gameData)
         {
             SetupDestroySoundEvents(gameData);
+            PreferenceOverrides(gameData);
         }
 
         private void SetupDestroySoundEvents(GameData gameData)
@@ -90,7 +94,14 @@ namespace KitchenRenovation
             var doorstop = GetPrefab("Door Attachment");
             doorstop.ApplyMaterialToChild("Stop", "Metal Black");
             view.DoorstopPrefab = doorstop;
-            
+
+            return prefab;
+        }
+
+        private GameObject SetupParticleEventView()
+        {
+            var prefab = GetPrefab("Particle Event");
+            var view = prefab.TryAddComponent<ParticleView>();
             return prefab;
         }
 
@@ -109,15 +120,37 @@ namespace KitchenRenovation
 
         private void SetupMenu()
         {
-            PrefManager = new(GUID, "Renovated");
+            PrefManager = new(GUID, NAME);
 
             PrefManager
+                .AddSubmenu("Appliances", "ApplianceEnabling")
+                    .AddInfo("All changes will require a restart")
+                    .AddLabel("Dynamite")
+                    .AddOption("Dynamite", true, new bool[] { false, true }, new string[] { "Disabled", "Enabled" }, true)
+                    .AddConditionalBlocker(() => !PrefManager.Get<bool>("Dynamite"))
+                        .AddLabel("Drill")
+                        .AddOption("WallDrill", true, new bool[] { false, true }, new string[] { "Disabled", "Enabled" })
+                    .ConditionalBlockerDone()
+                    .AddLabel("Doorstop")
+                    .AddOption("Doorstop", true, new bool[] { false, true }, new string[] { "Disabled", "Enabled" })
+                .SubmenuDone()
                 .AddLabel("Appliance Destruction")
                 .AddOption("DestroyAppliance", true, new bool[] { false, true }, new string[] { "Disabled", "Enabled" })
                 .AddLabel("Destroy Wall Time")
-                .AddOption("DestroyWallTime", 30f, new float[] { 10f, 20f, 30f, 40f, 50f, 60f }, new string[] { "10s", "20s", "30s", "40s", "50s", "60s" });
+                .AddOption("DestroyWallTime", 20f, new float[] { 10f, 20f, 30f, 40f, 50f, 60f }, new string[] { "10s", "20s", "30s", "40s", "50s", "60s" })
 
-            PrefManager.RegisterMenu(PreferenceSystemManager.MenuType.PauseMenu);
+                .RegisterMenu(PreferenceSystemManager.MenuType.PauseMenu);
+        }
+
+        private void PreferenceOverrides(GameData gameData)
+        {
+            foreach (var gdoPair in gameData.Objects)
+            {
+                if (!(gdoPair.Value is Appliance appliance) || !appliance.HasUpgrades)
+                    continue;
+
+                appliance.Upgrades.RemoveAll(p => ShouldBlock(p.ID));
+            }
         }
 
         #region Logging
@@ -169,10 +202,20 @@ namespace KitchenRenovation
             gdo.ModID = ModID;
             gdo.ModName = ModName;
 
-            CustomGDO.RegisterGameDataObject(gdo);
+            gdo = CustomGDO.RegisterGameDataObject(gdo);
+
+            if (typeof(IHavePreference).IsAssignableFrom(type))
+                GDOPreferences.Add(gdo.ID, ((IHavePreference)gdo).PreferenceName());
         }
 
         public interface IWontRegister { }
+
+        public static bool ShouldBlock(int id) => GDOPreferences.TryGetValue(id, out var pref) && !PrefManager.Get<bool>(pref);
+        public static Dictionary<int, string> GDOPreferences = new();
+        public interface IHavePreference
+        {
+            public string PreferenceName();
+        }
         #endregion
 
         #region Utility

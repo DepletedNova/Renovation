@@ -79,7 +79,7 @@ namespace KitchenRenovation.Systems
                     continue;
                 }
 
-                if (!cDest.TargetAppliances || !PrefManager.Get<bool>("DestroyAppliance")) // replace false with preference
+                if (!cDest.TargetAppliances || !PrefManager.Get<bool>("DestroyAppliance"))
                     continue;
 
                 if (Has<CAppliance>(fO) && !Has<CAllowMobilePathing>(fO))

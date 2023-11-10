@@ -45,7 +45,6 @@ namespace KitchenRenovation.Utility
             EM.SetComponentData(entity, new CTakesDuration
             {
                 Total = 30,
-                Mode = InteractionMode.Items,
                 IsLocked = true,
                 PreserveProgress = true
             });

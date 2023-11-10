@@ -10,8 +10,10 @@ using UnityEngine;
 
 namespace KitchenRenovation.GDOs
 {
-    public class WallDrill : CustomAppliance
+    public class WallDrill : CustomAppliance, IHavePreference
     {
+        public string PreferenceName() => "WallDrill";
+
         public override string UniqueNameID => "Wall Drill";
         public override List<(Locale, ApplianceInfo)> InfoList => new()
         {
@@ -31,8 +33,8 @@ namespace KitchenRenovation.GDOs
                 new()
                 {
                     Title = "Fueled",
-                    Description = "Requires payment per day of use. Increases by 10 for every day after day 5.",
-                    RangeDescription = "<sprite name=\"coin\"> 350"
+                    Description = "Requires payment per day of use. Increases by 25 multiplied by the current day.",
+                    RangeDescription = "<sprite name=\"coin\"> 400 + x"
                 },
             }, new()))
         };
@@ -61,13 +63,12 @@ namespace KitchenRenovation.GDOs
             },
             new CPurchaseable
             {
-                Cost = 250
+                Cost = 400
             },
             new CRampingCost
             {
-                IncreasedCost = 10,
-                DayIncrement = 1,
-                MinimumDay = 5
+                IncreasedCost = 25,
+                DayIncrement = 1
             },
             new CIsDailyPurchase()
         };
@@ -77,11 +78,11 @@ namespace KitchenRenovation.GDOs
         {
             prefab.ApplyMaterialToChild("Base", "Metal Very Dark");
             
-            prefab.TryAddComponent<NightObjectView>().Object = SetupDrillMaterials(prefab.GetChild("Drill"));
+            prefab.TryAddComponent<NightObjectView>().Object = SetupMaterials(prefab.GetChild("Drill"));
             prefab.TryAddComponent<PurchaseLightView>().Renderer = prefab.ApplyMaterialToChild("Light", "Indicator Light On").GetComponent<MeshRenderer>();
         }
 
-        internal static GameObject SetupDrillMaterials(GameObject prefab)
+        internal static GameObject SetupMaterials(GameObject prefab)
         {
             prefab.ApplyMaterialToChild("Chassis", "Metal - Brass");
             prefab.ApplyMaterialToChild("Engine", "Metal Dark", "Hob Black");

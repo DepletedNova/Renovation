@@ -59,6 +59,8 @@ namespace KitchenRenovation.Systems
                         Set<CReaching>(entity);
                     else
                         Set<CRemovedWall>(entity);
+
+                    CSoundEvent.Create(EntityManager, DestroySoundEvent);
                 } 
                 else if (shouldCreate) // Create
                 {

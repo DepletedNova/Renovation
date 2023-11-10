@@ -1,7 +1,6 @@
 ﻿using Kitchen;
 using KitchenData;
 using KitchenLib.Customs;
-using KitchenLib.References;
 using KitchenRenovation.Components;
 using System.Collections.Generic;
 using UnityEngine;
@@ -32,17 +31,6 @@ namespace KitchenRenovation.GDOs
         public override List<IApplianceProperty> Properties => new()
         {
             new CAllowMobilePathing(),
-            new CTakesDuration
-            {
-                Total = 2f,
-                Manual = true,
-                Mode = InteractionMode.Appliances,
-                ManualNeedsEmptyHands = true,
-            },
-            new CDisplayDuration
-            {
-                Process = ProcessReferences.Purchase
-            },
             new CSpawnSpecialMobile
             {
                 ID = GetCustomGameDataObject<MobileWallDrill>().ID

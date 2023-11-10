@@ -1,4 +1,5 @@
 ﻿using Kitchen;
+using KitchenData;
 using KitchenRenovation.Components;
 using System.Net;
 using Unity.Collections;
@@ -46,6 +47,8 @@ namespace KitchenRenovation.Systems
 
             if (totalCost <= 0)
                 return;
+
+            CSoundEvent.Create(EntityManager, SoundEvent.ItemDelivered);
 
             var money = GetSingleton<SMoney>();
             money.Amount -= totalCost;

@@ -140,6 +140,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Components\CExplodeAfterDuration.cs" />
+    <Compile Include="Components\CParticleEvent.cs" />
+    <Compile Include="Components\Mobiles\CDestroyAfterSpawning.cs" />
     <Compile Include="Components\CNightObject.cs" />
     <Compile Include="Components\Purchasing\CHasPurchase.cs" />
     <Compile Include="Components\CInteractDisable.cs" />
@@ -159,18 +162,25 @@
     <Compile Include="Components\Purchasing\CCostIndicator.cs" />
     <Compile Include="Components\Walls\SRebuildReachability.cs" />
     <Compile Include="Components\SRenovation.cs" />
+    <Compile Include="GDOs\BombProcess.cs" />
     <Compile Include="GDOs\DestroyWallProcess.cs" />
     <Compile Include="GDOs\Doorstop.cs" />
+    <Compile Include="GDOs\DynamiteDebug.cs" />
+    <Compile Include="GDOs\Dynamite.cs" />
+    <Compile Include="GDOs\MobileDynamite.cs" />
     <Compile Include="GDOs\MobileWallDrill.cs" />
     <Compile Include="GDOs\WallDrillDebug.cs" />
     <Compile Include="GDOs\WallDrill.cs" />
     <Compile Include="Main.cs" />
-    <Compile Include="Patches\DoorPatch.cs" />
-    <Compile Include="Patches\LayoutViewPatch.cs" />
+    <Compile Include="Patches\Door_Patch.cs" />
+    <Compile Include="Patches\LayoutView_Patch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Systems\AddPurchaseAfterDuration.cs" />
     <Compile Include="Systems\ApplianceDestructionLock.cs" />
     <Compile Include="Systems\DestroyApplianceAfterDuration.cs" />
+    <Compile Include="Systems\DestroyParticleEvents.cs" />
+    <Compile Include="Systems\ExplodeAfterDuration.cs" />
+    <Compile Include="Systems\FilterByPreference.cs" />
     <Compile Include="Systems\ManageCostIndicator.cs" />
     <Compile Include="Systems\PurchaseableLock.cs" />
     <Compile Include="Systems\RemoveDailyPurchases.cs" />
@@ -189,6 +199,7 @@
     <Compile Include="Views\CostIndicatorView.cs" />
     <Compile Include="Views\DestructiveDrillView.cs" />
     <Compile Include="Views\NightObjectView.cs" />
+    <Compile Include="Views\ParticleView.cs" />
     <Compile Include="Views\PurchaseLightView.cs" />
     <Compile Include="Views\RenovationView.cs" />
   </ItemGroup>

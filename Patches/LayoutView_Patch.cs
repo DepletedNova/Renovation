@@ -4,7 +4,7 @@ using Kitchen;
 namespace KitchenRenovation.Patches
 {
     [HarmonyPatch(typeof(LayoutView))]
-    class LayoutViewPatch
+    class LayoutView_Patch
     {
         [HarmonyPatch(nameof(LayoutView.Initialise))]
         [HarmonyPostfix]

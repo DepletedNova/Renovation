@@ -2,15 +2,12 @@
 using KitchenRenovation.Components;
 using Unity.Collections;
 using Unity.Entities;
-using UnityEngine;
 
 namespace KitchenRenovation.Systems
 {
     [UpdateInGroup(typeof(DurationLocks))]
     public class WallDestructionLock : GameSystemBase
     {
-        private const int DestroyWallDuration = 15;
-
         private EntityQuery Walls;
         protected override void Initialise()
         {

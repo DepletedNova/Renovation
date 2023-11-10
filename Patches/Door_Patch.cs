@@ -4,7 +4,7 @@ using Kitchen;
 namespace KitchenRenovation.Patches
 {
     [HarmonyPatch(typeof(Door))]
-    class DoorPatch
+    class Door_Patch
     {
         [HarmonyPatch(nameof(Door.Update))]
         [HarmonyPrefix]

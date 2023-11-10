@@ -40,6 +40,9 @@ namespace KitchenRenovation.Systems
                     Home = entities[i],
                     Start = cPos.Position
                 });
+
+                if (Has<CDestroyAfterSpawning>(entity))
+                    EntityManager.DestroyEntity(entity);
             }
         }
     }

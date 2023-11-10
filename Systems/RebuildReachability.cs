@@ -1,10 +1,8 @@
 ﻿using Kitchen;
 using KitchenRenovation.Components;
 using KitchenRenovation.Utility;
-using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Mathematics;
 using UnityEngine;
 
 namespace KitchenRenovation.Systems
