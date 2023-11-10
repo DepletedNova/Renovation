@@ -38,6 +38,8 @@ namespace KitchenRenovation
         public static CustomViewType PurchaseView;
         public static CustomViewType RenovationView;
         public static CustomViewType ParticleEventView;
+        public static ShoppingTags RenovationUtilityTag = (ShoppingTags)1048576;
+        public static ShoppingTags RenovationDestructiveTag = (ShoppingTags)524288;
 
         private void PostActivate()
         {
@@ -126,16 +128,16 @@ namespace KitchenRenovation
                 .AddSubmenu("Appliances", "ApplianceEnabling")
                     .AddInfo("All changes will require a restart")
                     .AddLabel("Dynamite")
-                    .AddOption("Dynamite", true, new bool[] { false, true }, new string[] { "Disabled", "Enabled" }, true)
-                    .AddConditionalBlocker(() => !PrefManager.Get<bool>("Dynamite"))
-                        .AddLabel("Drill")
-                        .AddOption("WallDrill", true, new bool[] { false, true }, new string[] { "Disabled", "Enabled" })
-                    .ConditionalBlockerDone()
+                    .AddOption("Dynamite", true, new bool[] { false, true }, new string[] { "Disabled", "Enabled" })
+                    .AddLabel("Drill")
+                    .AddOption("WallDrill", true, new bool[] { false, true }, new string[] { "Disabled", "Enabled" })
                     .AddLabel("Doorstop")
                     .AddOption("Doorstop", true, new bool[] { false, true }, new string[] { "Disabled", "Enabled" })
                 .SubmenuDone()
-                .AddLabel("Appliance Destruction")
-                .AddOption("DestroyAppliance", true, new bool[] { false, true }, new string[] { "Disabled", "Enabled" })
+                .AddConditionalBlocker(() => true)
+                    .AddLabel("Appliance Destruction")
+                    .AddOption("DestroyAppliance", false, new bool[] { false, true }, new string[] { "Disabled", "Enabled" })
+                .ConditionalBlockerDone()
                 .AddLabel("Destroy Wall Time")
                 .AddOption("DestroyWallTime", 20f, new float[] { 10f, 20f, 30f, 40f, 50f, 60f }, new string[] { "10s", "20s", "30s", "40s", "50s", "60s" })
 
@@ -204,18 +206,25 @@ namespace KitchenRenovation
 
             gdo = CustomGDO.RegisterGameDataObject(gdo);
 
-            if (typeof(IHavePreference).IsAssignableFrom(type))
-                GDOPreferences.Add(gdo.ID, ((IHavePreference)gdo).PreferenceName());
+            if (typeof(IRequirePreference).IsAssignableFrom(type))
+                GDOPreferences.Add(gdo.ID, ((IRequirePreference)gdo).PreferenceName());
+
+            if (typeof(IBlockDesks).IsAssignableFrom(type))
+                DeskBlockingGDOs.Add(gdo.ID);
         }
 
         public interface IWontRegister { }
 
         public static bool ShouldBlock(int id) => GDOPreferences.TryGetValue(id, out var pref) && !PrefManager.Get<bool>(pref);
-        public static Dictionary<int, string> GDOPreferences = new();
-        public interface IHavePreference
+        internal static Dictionary<int, string> GDOPreferences = new();
+        public interface IRequirePreference
         {
             public string PreferenceName();
         }
+
+        public static bool BlocksDesk(int id) => DeskBlockingGDOs.Contains(id);
+        internal static List<int> DeskBlockingGDOs = new();
+        public interface IBlockDesks { }
         #endregion
 
         #region Utility

@@ -1,22 +1,19 @@
 ﻿using Kitchen;
 using KitchenData;
 using KitchenLib.Customs;
-using KitchenLib.References;
 using KitchenLib.Utils;
 using KitchenRenovation.Components;
-using KitchenRenovation.Views;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.VFX;
 
 namespace KitchenRenovation.GDOs
 {
-    public class MobileDynamite : CustomAppliance
+    public class LitDynamite : CustomAppliance
     {
-        public override string UniqueNameID => "Mobile Dynamite";
+        public override string UniqueNameID => "Lit Dynamite";
         public override List<(Locale, ApplianceInfo)> InfoList => new()
         {
-            (Locale.English, CreateApplianceInfo("Mobile Dynamite", "", new List<Appliance.Section>(), new()))
+            (Locale.English, CreateApplianceInfo("Lit Dynamite", "", new List<Appliance.Section>(), new()))
         };
 
         public override EntryAnimation EntryAnimation => EntryAnimation.Instant;
@@ -27,7 +24,7 @@ namespace KitchenRenovation.GDOs
             new CDoesNotOccupy(),
             new CTakesDuration
             {
-                Total = 7f
+                Total = 5f
             },
             new CDisplayDuration
             {
@@ -37,7 +34,7 @@ namespace KitchenRenovation.GDOs
             {
                 Width = 3,
                 Length = 3,
-                DestroyAppliances = true,
+                DestroyAppliances = false,
             }
         };
 

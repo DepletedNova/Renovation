@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace KitchenRenovation.GDOs
 {
-    public class Dynamite : CustomAppliance, IHavePreference
+    public class Dynamite : CustomAppliance, IRequirePreference, IBlockDesks
     {
         public string PreferenceName() => "Dynamite";
 
@@ -20,49 +20,28 @@ namespace KitchenRenovation.GDOs
             {
                 new()
                 {
-                    Title = "Explosive",
-                    Description = "Blows up and destroys nearby walls and appliances.",
-                    RangeDescription = "<sprite name=\"range\"> 3x3 Tiles"
+                    Description = "Can not be copied or discounted"
                 },
                 new()
                 {
-                    Title = "Fueled",
-                    Description = "Requires payment to use. Increases by 25 multiplied by the current day.",
-                    RangeDescription = "<sprite name=\"coin\"> 250 + x"
-                },
+                    Title = "Explosive",
+                    Description = "Blows up and destroys nearby walls",
+                    RangeDescription = "<sprite name=\"range\"> 3x3 Tiles"
+                }
             }, new()))
         };
         public override bool IsPurchasable => true;
-        public override PriceTier PriceTier => PriceTier.Expensive;
+        public override PriceTier PriceTier => PriceTier.VeryExpensive;
+        public override int PurchaseCostOverride => 500;
         public override RarityTier RarityTier => RarityTier.Rare;
-        public override ShoppingTags ShoppingTags => ShoppingTags.Misc | ShoppingTags.Technology;
+        public override ShoppingTags ShoppingTags => RenovationDestructiveTag;
 
         public override List<IApplianceProperty> Properties => new()
         {
             new CAllowMobilePathing(),
-            new CTakesDuration
-            {
-                Total = 2f,
-                Manual = true,
-                Mode = InteractionMode.Appliances,
-                ManualNeedsEmptyHands = true,
-            },
-            new CDisplayDuration
-            {
-                Process = ProcessReferences.Purchase
-            },
             new CSpawnSpecialMobile
             {
-                ID = GetCustomGameDataObject<MobileDynamite>().ID
-            },
-            new CPurchaseable
-            {
-                Cost = 250
-            },
-            new CRampingCost
-            {
-                IncreasedCost = 25,
-                DayIncrement = 1
+                ID = GetCustomGameDataObject<LitDynamite>().ID
             },
             new CDestroyAfterSpawning()
         };

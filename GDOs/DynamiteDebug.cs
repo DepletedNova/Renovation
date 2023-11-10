@@ -30,7 +30,7 @@ namespace KitchenRenovation.GDOs
             new CAllowMobilePathing(),
             new CSpawnSpecialMobile
             {
-                ID = GetCustomGameDataObject<MobileDynamite>().ID
+                ID = GetCustomGameDataObject<LitDynamite>().ID
             },
             new CDestroyAfterSpawning()
         };

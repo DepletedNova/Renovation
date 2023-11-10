@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace KitchenRenovation.GDOs
 {
-    public class WallDrill : CustomAppliance, IHavePreference
+    public class WallDrill : CustomAppliance, IRequirePreference, IBlockDesks
     {
         public string PreferenceName() => "WallDrill";
 
@@ -21,27 +21,26 @@ namespace KitchenRenovation.GDOs
             {
                 new()
                 {
-                    Title = "Emergency Switch",
-                    Description = "Can be interacted to be shut off during the day"
+                    Description = "Can not be copied or discounted"
                 },
                 new()
                 {
                     Title = "Driller",
-                    Description = "Drives forward during the day and destroys both appliances and walls",
+                    Description = "Drives forward during the day and destroys walls. Can be blocked by appliances.",
                     RangeDescription = "<sprite name=\"range\"> 6 Tiles"
                 },
                 new()
                 {
                     Title = "Fueled",
-                    Description = "Requires payment per day of use. Increases by 25 multiplied by the current day.",
-                    RangeDescription = "<sprite name=\"coin\"> 400 + x"
+                    Description = "Requires payment per day of use. Increases by 25 multiplied for each day.",
+                    RangeDescription = "<sprite name=\"coin\"> 250 + x"
                 },
             }, new()))
         };
         public override bool IsPurchasable => true;
-        public override PriceTier PriceTier => PriceTier.ExtremelyExpensive;
-        public override RarityTier RarityTier => RarityTier.Rare;
-        public override ShoppingTags ShoppingTags => ShoppingTags.Misc | ShoppingTags.Technology;
+        public override PriceTier PriceTier => PriceTier.VeryExpensive;
+        public override RarityTier RarityTier => RarityTier.Common;
+        public override ShoppingTags ShoppingTags => RenovationDestructiveTag;
 
         public override List<IApplianceProperty> Properties => new()
         {
@@ -63,7 +62,7 @@ namespace KitchenRenovation.GDOs
             },
             new CPurchaseable
             {
-                Cost = 400
+                Cost = 250
             },
             new CRampingCost
             {

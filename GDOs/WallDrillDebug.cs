@@ -16,14 +16,8 @@ namespace KitchenRenovation.GDOs
             {
                 new()
                 {
-                    Title = "Emergency Switch",
-                    Description = "Can be interacted to be shut off during the day"
-                },
-                new()
-                {
                     Title = "Driller",
-                    Description = "Drives forward during the day and destroys both appliances and walls",
-                    RangeDescription = "<sprite name=\"range\"> 6 Tiles"
+                    Description = "Drives forward during the day and destroys both appliances and walls"
                 },
             }, new()))
         };

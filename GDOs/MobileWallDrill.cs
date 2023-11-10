@@ -39,7 +39,7 @@ namespace KitchenRenovation.GDOs
             new CDestructive
             {
                 Multiplier = 1f,
-                TargetAppliances = true,
+                TargetAppliances = false,
                 DestroyToWall = true,
                 TargetPosition = Vector3.right * 100,
                 ApplianceOffset = 0.2f,
@@ -47,12 +47,10 @@ namespace KitchenRenovation.GDOs
             },
             new CForwardMobile
             {
-                IgnoreAppliances = true,
+                IgnoreAppliances = false,
                 IgnoreWalls = true,
-                MaxDistance = 6,
-                Speed = 0.3f
-            },
-            new CInteractDisable()
+                Speed = 0.35f
+            }
         };
 
         public override GameObject Prefab => GetPrefab("Mobile Wall Drill");

@@ -30,7 +30,7 @@ namespace KitchenRenovation.Systems
                     var cBase = GetComponent<CMobileBase>(entity);
                     var cPosition = GetComponent<CPosition>(entity);
 
-                    if (cForward.MaxDistance - (cPosition.Position - cBase.Start).Chebyshev() < 0.1f)
+                    if (cForward.MaxDistance > 0 && cForward.MaxDistance - (cPosition.Position - cBase.Start).Chebyshev() < 0.1f)
                     {
                         Set<CIsInactive>(entity);
                         continue;

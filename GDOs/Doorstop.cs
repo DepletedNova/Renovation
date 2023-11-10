@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace KitchenRenovation.GDOs
 {
-    public class Doorstop : CustomAppliance, IHavePreference
+    public class Doorstop : CustomAppliance, IRequirePreference, IBlockDesks
     {
         public string PreferenceName() => "Doorstop";
 
@@ -20,6 +20,10 @@ namespace KitchenRenovation.GDOs
             {
                 new()
                 {
+                    Description = "Can not be copied or discounted"
+                },
+                new()
+                {
                     Title = "Stopping",
                     Description = "During the day, nearby doors will be opened in the direction of the doorstop."
                 }
@@ -28,7 +32,7 @@ namespace KitchenRenovation.GDOs
         public override bool IsPurchasable => true;
         public override PriceTier PriceTier => PriceTier.Medium;
         public override RarityTier RarityTier => RarityTier.Uncommon;
-        public override ShoppingTags ShoppingTags => ShoppingTags.Misc;
+        public override ShoppingTags ShoppingTags => RenovationUtilityTag | ShoppingTags.Misc;
         public override OccupancyLayer Layer => OccupancyLayer.Floor;
 
         public override List<IApplianceProperty> Properties => new()

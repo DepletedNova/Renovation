@@ -44,9 +44,6 @@ namespace KitchenRenovation.Systems
                 {
                     for (int y = -floorLength; y <= ceilLength; y++)
                     {
-                        if (x == 0 && y == 0)
-                            continue;
-
                         var tilePos = rounded + cPos.Right(x) + cPos.Forward(y);
                         var currentTile = GetTile(tilePos);
 
@@ -59,7 +56,7 @@ namespace KitchenRenovation.Systems
                         if (x != ceilWidth)
                             TryDestroyWall(currentTile, GetTile(tilePos - cPos.Forward(1)));
 
-                        if (y == ceilLength || x == ceilWidth)
+                        if (y == ceilLength || x == ceilWidth || x == 0 || y == 0)
                             continue;
 
                         // Appliances
@@ -67,7 +64,8 @@ namespace KitchenRenovation.Systems
                             continue;
 
                         var occupant = GetOccupant(tilePos);
-                        if (Has<CAppliance>(occupant))
+                        if (Has<CAppliance>(occupant) && 
+                            !Has<CApplianceTable>(occupant) && !Has<CApplianceHostStand>(occupant) && !Has<CApplianceChair>(occupant))
                             EntityManager.DestroyEntity(occupant);
                     }
                 }
