@@ -22,7 +22,14 @@ namespace KitchenRenovation.Systems
 
             if (Require(source, out CRampingCost cRamping) && Require(out SDay sDay))
             {
-                var day = sDay.Day - cRamping.MinimumDay;
+                var currentDay = GetSingleton<SDay>().Day;
+                if (cRamping.UseBoughtDay && cRamping.MinimumDay == 0)
+                {
+                    cRamping.MinimumDay = currentDay;
+                    Set(source, cRamping);
+                }
+
+                var day = currentDay - cRamping.MinimumDay;
                 if (day > 0)
                     cost += cRamping.IncreasedCost * (day / cRamping.DayIncrement);
             }

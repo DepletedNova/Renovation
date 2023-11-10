@@ -26,7 +26,7 @@ namespace KitchenRenovation
     {
         public const string NAME = "Renovation";
         public const string GUID = "nova.renovation";
-        public const string VERSION = "0.1.0";
+        public const string VERSION = "0.2.1";
 
         public Main() : base(GUID, NAME, "Zoey Davis", VERSION, ">=1.0.0", Assembly.GetExecutingAssembly()) { }
 
@@ -134,14 +134,12 @@ namespace KitchenRenovation
                     .AddLabel("Doorstop")
                     .AddOption("Doorstop", true, new bool[] { false, true }, new string[] { "Disabled", "Enabled" })
                 .SubmenuDone()
-                .AddConditionalBlocker(() => true)
-                    .AddLabel("Appliance Destruction")
-                    .AddOption("DestroyAppliance", false, new bool[] { false, true }, new string[] { "Disabled", "Enabled" })
-                .ConditionalBlockerDone()
+                .AddLabel("Appliance Destruction")
+                .AddOption("DestroyAppliance", false, new bool[] { false, true }, new string[] { "Disabled", "Enabled" })
                 .AddLabel("Destroy Wall Time")
-                .AddOption("DestroyWallTime", 20f, new float[] { 10f, 20f, 30f, 40f, 50f, 60f }, new string[] { "10s", "20s", "30s", "40s", "50s", "60s" })
+                .AddOption("DestroyWallTime", 20f, new float[] { 10f, 20f, 30f, 40f, 50f, 60f }, new string[] { "10s", "20s", "30s", "40s", "50s", "60s" });
 
-                .RegisterMenu(PreferenceSystemManager.MenuType.PauseMenu);
+                //.RegisterMenu(PreferenceSystemManager.MenuType.PauseMenu);
         }
 
         private void PreferenceOverrides(GameData gameData)

@@ -29,7 +29,14 @@ namespace KitchenRenovation.Systems
                 int cost = purchaseables[i].Cost;
                 if (Require(entity, out CRampingCost cRamping))
                 {
-                    var day = GetSingleton<SDay>().Day - cRamping.MinimumDay;
+                    var currentDay = GetSingleton<SDay>().Day;
+                    if (cRamping.UseBoughtDay && cRamping.MinimumDay == 0)
+                    {
+                        cRamping.MinimumDay = currentDay;
+                        Set(entity, cRamping);
+                    }
+
+                    var day = currentDay - cRamping.MinimumDay;
                     if (day > 0)
                         cost += cRamping.IncreasedCost * (day / cRamping.DayIncrement);
                 }

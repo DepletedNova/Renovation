@@ -25,15 +25,20 @@ namespace KitchenRenovation.GDOs
                 },
                 new()
                 {
-                    Title = "Driller",
+                    Title = "Emergency Switch",
+                    Description = "Can be interacted to be shut off during the day"
+                },
+                new()
+                {
+                    Title = "Unstoppable",
                     Description = "Drives forward during the day and destroys walls. Can be blocked by appliances.",
                     RangeDescription = "<sprite name=\"range\"> 6 Tiles"
                 },
                 new()
                 {
                     Title = "Fueled",
-                    Description = "Requires payment per day of use. Increases by 25 multiplied for each day.",
-                    RangeDescription = "<sprite name=\"coin\"> 250 + x"
+                    Description = "Requires payment per day of use. Payment increases in overtime.",
+                    RangeDescription = "<sprite name=\"coin\"> 500"
                 },
             }, new()))
         };
@@ -67,7 +72,9 @@ namespace KitchenRenovation.GDOs
             new CRampingCost
             {
                 IncreasedCost = 25,
-                DayIncrement = 1
+                DayIncrement = 1,
+                MinimumDay = 15,
+                UseBoughtDay = false
             },
             new CIsDailyPurchase()
         };

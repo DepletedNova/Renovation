@@ -1,13 +1,11 @@
 ﻿using Kitchen;
 using KitchenData;
 using KitchenLib.Customs;
-using KitchenLib.References;
 using KitchenLib.Utils;
 using KitchenRenovation.Components;
 using KitchenRenovation.Views;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.VFX;
 
 namespace KitchenRenovation.GDOs
 {
@@ -50,7 +48,8 @@ namespace KitchenRenovation.GDOs
                 IgnoreAppliances = false,
                 IgnoreWalls = true,
                 Speed = 0.35f
-            }
+            },
+            new CInteractDisable()
         };
 
         public override GameObject Prefab => GetPrefab("Mobile Wall Drill");

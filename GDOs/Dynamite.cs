@@ -32,7 +32,7 @@ namespace KitchenRenovation.GDOs
         };
         public override bool IsPurchasable => true;
         public override PriceTier PriceTier => PriceTier.VeryExpensive;
-        public override int PurchaseCostOverride => 500;
+        public override int PurchaseCostOverride => 750;
         public override RarityTier RarityTier => RarityTier.Rare;
         public override ShoppingTags ShoppingTags => RenovationDestructiveTag;
 

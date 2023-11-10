@@ -6,6 +6,7 @@ namespace KitchenRenovation.Components
     {
         public int IncreasedCost;
         public int DayIncrement;
+        public bool UseBoughtDay;
         public int MinimumDay;
     }
 }

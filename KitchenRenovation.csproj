@@ -165,7 +165,6 @@
     <Compile Include="GDOs\BombProcess.cs" />
     <Compile Include="GDOs\DestroyWallProcess.cs" />
     <Compile Include="GDOs\Doorstop.cs" />
-    <Compile Include="GDOs\DynamiteDebug.cs" />
     <Compile Include="GDOs\Dynamite.cs" />
     <Compile Include="GDOs\LitDynamite.cs" />
     <Compile Include="GDOs\MobileWallDrill.cs" />
