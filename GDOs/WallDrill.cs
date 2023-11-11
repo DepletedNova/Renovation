@@ -31,13 +31,12 @@ namespace KitchenRenovation.GDOs
                 new()
                 {
                     Title = "Unstoppable",
-                    Description = "Drives forward during the day and destroys walls. Can be blocked by appliances.",
-                    RangeDescription = "<sprite name=\"range\"> 6 Tiles"
+                    Description = "Drives forward during the day and destroys walls. Can be blocked by appliances"
                 },
                 new()
                 {
                     Title = "Fueled",
-                    Description = "Requires payment per day of use. Payment increases in overtime.",
+                    Description = "Requires payment per day of use. Payment increases per day in overtime",
                     RangeDescription = "<sprite name=\"coin\"> 500"
                 },
             }, new()))
@@ -67,7 +66,7 @@ namespace KitchenRenovation.GDOs
             },
             new CPurchaseable
             {
-                Cost = 250
+                Cost = 500
             },
             new CRampingCost
             {

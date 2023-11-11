@@ -18,11 +18,13 @@ namespace KitchenRenovation.Views
 
         // Cached
         public List<Liner> Liners = new();
+        public List<Hatch> Hatches = new();
         public List<Doorstop> Doorstops = new();
 
         // Prefabs
         [SerializeField] public GameObject LinerPrefab;
         [SerializeField] public GameObject DoorstopPrefab;
+        [SerializeField] public GameObject HatchPrefab;
 
         private ViewData Data = default;
         protected override void UpdateData(ViewData data)
@@ -43,7 +45,24 @@ namespace KitchenRenovation.Views
         public void CleanObjects()
         {
             CleanLiners();
+            CleanHatches();
             CleanDoorstops();
+        }
+
+        public void CleanHatches()
+        {
+            for (int i = Hatches.Count - 1; i >= 0; i--)
+            {
+                var hatch = Hatches[i];
+                if (Data.Hatches.Any(p => (p.Item1 == hatch.Tile1 && p.Item2 == hatch.Tile2) ||
+                        (p.Item2 == hatch.Tile1 && p.Item1 == hatch.Tile2)) &&
+                    !Data.Destroyed.Any(p => (p.Item1 == hatch.Tile1 && p.Item2 == hatch.Tile2) ||
+                        (p.Item2 == hatch.Tile1 && p.Item1 == hatch.Tile2)))
+                    continue;
+
+                Destroy(hatch.HatchObject);
+                Hatches.RemoveAt(i);
+            }
         }
 
         public void CleanLiners()
@@ -65,7 +84,8 @@ namespace KitchenRenovation.Views
             for (int i = Doorstops.Count - 1; i >= 0; i--)
             {
                 var stop = Doorstops[i];
-                if (Data.Doorstops.Any(p => stop.Tile == p))
+                if (Data.Doorstops.Any(p => stop.Tile == p) && 
+                    !Data.Destroyed.Any(p => p.Item1 == stop.Tile || p.Item2 == stop.Tile) && !Data.Hatches.Any(p => p.Item1 == stop.Tile || p.Item2 == stop.Tile))
                     continue;
 
                 Destroy(stop.Attached);
@@ -84,7 +104,7 @@ namespace KitchenRenovation.Views
                 var tile1 = wall.Tile1.ToWorld();
                 var tile2 = wall.Tile2.ToWorld();
 
-                if (DestroyWall(tile1, tile2))
+                if (DestroyWall(tile1, tile2) || DestroyToHatch(tile1, tile2))
                 {
                     Destroy(wall.Collider.gameObject);
                     builder.Walls.RemoveAt(i);
@@ -114,6 +134,18 @@ namespace KitchenRenovation.Views
             }
         }
 
+        public void ModifyRenovated()
+        {
+            for (int i = Hatches.Count - 1; i >= 0; i--)
+            {
+                var hatch = Hatches[i];
+                var tile1 = hatch.Tile1.ToWorld();
+                var tile2 = hatch.Tile2.ToWorld();
+
+                DestroyWall(tile1, tile2);
+            }
+        }
+
         public bool DestroyWall(Vector3 Tile1, Vector3 Tile2)
         {
             if (!Data.Destroyed.Any(p => (p.Item1 == Tile1 && p.Item2 == Tile2) ||
@@ -129,6 +161,30 @@ namespace KitchenRenovation.Views
             Liners.Add(new()
             {
                 LinerObject = gameObject,
+                Tile1 = Tile1,
+                Tile2 = Tile2,
+            });
+
+            return true;
+        }
+
+        public bool DestroyToHatch(Vector3 Tile1, Vector3 Tile2)
+        {
+            if (!Data.Hatches.Any(p => (p.Item1 == Tile1 && p.Item2 == Tile2) ||
+                    (p.Item2 == Tile1 && p.Item1 == Tile2)) ||
+                Data.Destroyed.Any(p => (p.Item1 == Tile1 && p.Item2 == Tile2) ||
+                    (p.Item2 == Tile1 && p.Item1 == Tile2)))
+                return false;
+
+            GetWallTransforms(Tile1, Tile2, out var pos, out var rot);
+            var gameObject = Instantiate(HatchPrefab);
+            gameObject.transform.SetParent(transform, false);
+            gameObject.transform.position = pos;
+            gameObject.transform.rotation = rot;
+
+            Hatches.Add(new()
+            {
+                HatchObject = gameObject,
                 Tile1 = Tile1,
                 Tile2 = Tile2,
             });
@@ -198,6 +254,13 @@ namespace KitchenRenovation.Views
             public GameObject LinerObject;
         }
 
+        public struct Hatch
+        {
+            public Vector3 Tile1;
+            public Vector3 Tile2;
+            public GameObject HatchObject;
+        }
+
         public struct Doorstop
         {
             public Door Door;
@@ -209,10 +272,11 @@ namespace KitchenRenovation.Views
         public struct ViewData : IViewData, IViewData.ICheckForChanges<ViewData>
         {
             [Key(1)] public List<ValueTuple<Vector3, Vector3>> Destroyed;
+            [Key(1)] public List<ValueTuple<Vector3, Vector3>> Hatches;
             [Key(2)] public List<Vector3> Doorstops;
 
             public bool IsChangedFrom(ViewData check) =>
-                !Destroyed.IsEqual(check.Destroyed) || !Doorstops.IsEqual(check.Doorstops);
+                !Destroyed.IsEqual(check.Destroyed) || !Hatches.IsEqual(check.Hatches) || !Doorstops.IsEqual(check.Doorstops);
         }
 
         private class UpdateView : IncrementalViewSystemBase<ViewData>
@@ -225,9 +289,7 @@ namespace KitchenRenovation.Views
             {
                 base.Initialise();
 
-                ModifiedWalls = GetEntityQuery(new QueryHelper()
-                    .All(typeof(CTargetableWall))
-                    .Any(typeof(CRemovedWall)));
+                ModifiedWalls = GetEntityQuery(typeof(CTargetableWall));
                 Doorstops = GetEntityQuery(typeof(CDoorstop), typeof(CPosition));
 
                 Views = GetEntityQuery(typeof(SRenovation), typeof(CLinkedView));
@@ -239,15 +301,20 @@ namespace KitchenRenovation.Views
             protected override void OnUpdate()
             {
                 List<ValueTuple<Vector3, Vector3>> destroyed = new();
+                List<ValueTuple<Vector3, Vector3>> hatches = new();
                 using (var walls = ModifiedWalls.ToEntityArray(Allocator.Temp))
                 {
                     for (int i = 0; i < walls.Length; i++)
                     {
-                        if (!Has<CRemovedWall>(walls[i]))
-                            continue;
-
                         var wall = GetComponent<CTargetableWall>(walls[i]);
-                        destroyed.Add((wall.Tile1, wall.Tile2));
+                        if (Has<CRemovedWall>(walls[i]))
+                        {
+                            destroyed.Add((wall.Tile1, wall.Tile2));
+                        } 
+                        else if (Has<CHatch>(walls[i]))
+                        {
+                            hatches.Add((wall.Tile1, wall.Tile2));
+                        }
                     }
                 }
 
@@ -270,7 +337,8 @@ namespace KitchenRenovation.Views
                         SendUpdate(views[i], new ViewData
                         {
                             Destroyed = destroyed,
-                            Doorstops = openers
+                            Hatches = hatches,
+                            Doorstops = openers,
                         });
                     }
                 }

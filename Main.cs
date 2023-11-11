@@ -1,24 +1,22 @@
-﻿global using static KitchenRenovation.Main;
-global using static KitchenLib.Utils.GDOUtils;
-global using static KitchenLib.Utils.LocalisationUtils;
+﻿global using static KitchenLib.Utils.GDOUtils;
 global using static KitchenLib.Utils.KitchenPropertiesUtils;
+global using static KitchenLib.Utils.LocalisationUtils;
+global using static KitchenRenovation.Main;
 using KitchenData;
 using KitchenLib;
 using KitchenLib.Customs;
 using KitchenLib.Event;
 using KitchenLib.Utils;
+using KitchenLib.Views;
 using KitchenMods;
+using KitchenRenovation.Utility;
+using KitchenRenovation.Views;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using TMPro;
 using UnityEngine;
-using KitchenLib.Views;
-using KitchenRenovation.Utility;
-using KitchenRenovation.Views;
-using System.Collections.Generic;
-using System;
-using PreferenceSystem;
-using KitchenRenovation.Components;
 
 namespace KitchenRenovation
 {
@@ -26,11 +24,10 @@ namespace KitchenRenovation
     {
         public const string NAME = "Renovation";
         public const string GUID = "nova.renovation";
-        public const string VERSION = "0.2.1";
+        public const string VERSION = "0.2.2";
 
         public Main() : base(GUID, NAME, "Zoey Davis", VERSION, ">=1.0.0", Assembly.GetExecutingAssembly()) { }
 
-        public static PreferenceSystemManager PrefManager;
         private static AssetBundle Bundle;
 
         // References
@@ -43,7 +40,6 @@ namespace KitchenRenovation
 
         private void PostActivate()
         {
-            SetupMenu();
             AddIcons();
 
             PurchaseView = AddViewType("PurchaseView", SetupPurchaseView);
@@ -97,6 +93,11 @@ namespace KitchenRenovation
             doorstop.ApplyMaterialToChild("Stop", "Metal Black");
             view.DoorstopPrefab = doorstop;
 
+            var hatch = GetPrefab("Created Hatch");
+            hatch.ApplyMaterialToChild("Surface", "Wood - Default");
+            hatch.ApplyMaterialToChild("Supports", "Wood - Corkboard");
+            view.HatchPrefab = hatch;
+
             return prefab;
         }
 
@@ -118,28 +119,6 @@ namespace KitchenRenovation
             TMP_Settings.defaultSpriteAsset.fallbackSpriteAssets.Add(icons);
 
             Log("Registered icons");
-        }
-
-        private void SetupMenu()
-        {
-            PrefManager = new(GUID, NAME);
-
-            PrefManager
-                .AddSubmenu("Appliances", "ApplianceEnabling")
-                    .AddInfo("All changes will require a restart")
-                    .AddLabel("Dynamite")
-                    .AddOption("Dynamite", true, new bool[] { false, true }, new string[] { "Disabled", "Enabled" })
-                    .AddLabel("Drill")
-                    .AddOption("WallDrill", true, new bool[] { false, true }, new string[] { "Disabled", "Enabled" })
-                    .AddLabel("Doorstop")
-                    .AddOption("Doorstop", true, new bool[] { false, true }, new string[] { "Disabled", "Enabled" })
-                .SubmenuDone()
-                .AddLabel("Appliance Destruction")
-                .AddOption("DestroyAppliance", false, new bool[] { false, true }, new string[] { "Disabled", "Enabled" })
-                .AddLabel("Destroy Wall Time")
-                .AddOption("DestroyWallTime", 20f, new float[] { 10f, 20f, 30f, 40f, 50f, 60f }, new string[] { "10s", "20s", "30s", "40s", "50s", "60s" });
-
-                //.RegisterMenu(PreferenceSystemManager.MenuType.PauseMenu);
         }
 
         private void PreferenceOverrides(GameData gameData)
@@ -213,7 +192,7 @@ namespace KitchenRenovation
 
         public interface IWontRegister { }
 
-        public static bool ShouldBlock(int id) => GDOPreferences.TryGetValue(id, out var pref) && !PrefManager.Get<bool>(pref);
+        public static bool ShouldBlock(int id) => false; // GDOPreferences.TryGetValue(id, out var pref) && !PrefManager.Get<bool>(pref)
         internal static Dictionary<int, string> GDOPreferences = new();
         public interface IRequirePreference
         {

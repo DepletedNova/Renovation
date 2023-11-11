@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace KitchenRenovation.Components
 {
-    public struct CDestructive : IApplianceProperty
+    public struct CDestructive : IApplianceProperty, IItemProperty
     {
         public bool TargetAppliances;
         public bool DestroyToWall;

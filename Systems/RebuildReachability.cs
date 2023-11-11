@@ -85,9 +85,6 @@ namespace KitchenRenovation.Systems
             }
         }
 
-        public bool IsDiagonal(Vector3 from, Vector3 to) => 
-            Mathf.Abs(to.x - from.x) == 1 && Mathf.Abs(to.z - from.z) == 1;
-
         public void UpdateDirect(ref CLayoutRoomTile tile, Vector3 from, Vector3 to, bool unblocked)
         {
             if (tile.Position != from)
@@ -126,7 +123,7 @@ namespace KitchenRenovation.Systems
 
         public void UpdateDiagonal(ref CLayoutRoomTile tile, Vector3 near, Vector3 far)
         {
-            if (!IsDiagonal(tile.Position, far))
+            if (!tile.Position.IsDiagonal(far))
                 return;
 
             var offset = (far - near).ToInt();

@@ -140,19 +140,22 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Components\CExplodeAfterDuration.cs" />
+    <Compile Include="Components\CDestructiveTool.cs" />
+    <Compile Include="Components\Spawn\CExplodeAfterDuration.cs" />
+    <Compile Include="Components\Spawn\CInteractDestroysDisabled.cs" />
+    <Compile Include="Components\Walls\CHatch.cs" />
     <Compile Include="Components\CParticleEvent.cs" />
-    <Compile Include="Components\Mobiles\CDestroyAfterSpawning.cs" />
+    <Compile Include="Components\Spawn\CDestroyAfterSpawning.cs" />
     <Compile Include="Components\CNightObject.cs" />
     <Compile Include="Components\Purchasing\CHasPurchase.cs" />
-    <Compile Include="Components\CInteractDisable.cs" />
+    <Compile Include="Components\Spawn\CInteractDisable.cs" />
     <Compile Include="Components\Purchasing\CIsDailyPurchase.cs" />
     <Compile Include="Components\Purchasing\CPurchaseable.cs" />
     <Compile Include="Components\Purchasing\CRampingCost.cs" />
-    <Compile Include="Components\Mobiles\CMobileBase.cs" />
-    <Compile Include="Components\Mobiles\CSpawnSpecialMobile.cs" />
-    <Compile Include="Components\Mobiles\CForwardMobile.cs" />
-    <Compile Include="Components\Mobiles\CDestructive.cs" />
+    <Compile Include="Components\Spawn\CMobileBase.cs" />
+    <Compile Include="Components\Spawn\CSpawnSpecialMobile.cs" />
+    <Compile Include="Components\Spawn\CForwardMobile.cs" />
+    <Compile Include="Components\CDestructive.cs" />
     <Compile Include="Components\Walls\CWallTargetedBy.cs" />
     <Compile Include="Components\CDoorstop.cs" />
     <Compile Include="Components\Walls\CReaching.cs" />
@@ -168,6 +171,8 @@
     <Compile Include="GDOs\Dynamite.cs" />
     <Compile Include="GDOs\LitDynamite.cs" />
     <Compile Include="GDOs\MobileWallDrill.cs" />
+    <Compile Include="GDOs\Sledgehammer.cs" />
+    <Compile Include="GDOs\SledgehammerSource.cs" />
     <Compile Include="GDOs\WallDrillDebug.cs" />
     <Compile Include="GDOs\WallDrill.cs" />
     <Compile Include="Main.cs" />
@@ -182,9 +187,12 @@
     <Compile Include="Systems\DestroyParticleEvents.cs" />
     <Compile Include="Systems\ExplodeAfterDuration.cs" />
     <Compile Include="Systems\FilterByPreference.cs" />
+    <Compile Include="Systems\InteractDestroysDisabled.cs" />
+    <Compile Include="Systems\InteractDestroyWall.cs" />
     <Compile Include="Systems\ManageCostIndicator.cs" />
     <Compile Include="Systems\PurchaseableLock.cs" />
     <Compile Include="Systems\RemoveDailyPurchases.cs" />
+    <Compile Include="Systems\ResetWallToolTargets.cs" />
     <Compile Include="Systems\UpdateWallAfterDuration.cs" />
     <Compile Include="Systems\EnsureRenovationView.cs" />
     <Compile Include="Systems\InteractDisable.cs" />

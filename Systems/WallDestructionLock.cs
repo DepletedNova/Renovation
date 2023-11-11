@@ -5,7 +5,7 @@ using Unity.Entities;
 
 namespace KitchenRenovation.Systems
 {
-    [UpdateInGroup(typeof(DurationLocks))]
+    [UpdateInGroup(typeof(DurationLocks), OrderFirst = true)]
     public class WallDestructionLock : GameSystemBase
     {
         private EntityQuery Walls;
@@ -24,12 +24,15 @@ namespace KitchenRenovation.Systems
                     var entity = entities[i];
                     var buffer = GetBuffer<CWallTargetedBy>(entity);
 
-                    int amountOnFire = 0;
-                    float total = PrefManager.Get<float>("DestroyWallTime");
+                    bool isRemoved = Has<CRemovedWall>(entity);
+
+                    int incapableInteractors = 0;
+                    float total = 10f;
                     for (int i2 = buffer.Length - 1; i2 >= 0; i2--)
                     {
                         var interactor = buffer[i2].Interactor;
-                        if (!Require(interactor, out CDestructive cDestructive) || cDestructive.Target != entity ||
+                        if (isRemoved || 
+                            !Require(interactor, out CDestructive cDestructive) || cDestructive.Target != entity ||
                             Has<CIsInactive>(interactor))
                         {
                             buffer.RemoveAt(i2);
@@ -38,7 +41,7 @@ namespace KitchenRenovation.Systems
 
                         if (Has<CIsOnFire>(interactor))
                         {
-                            amountOnFire++;
+                            incapableInteractors++;
                             continue;
                         }
 
@@ -46,20 +49,34 @@ namespace KitchenRenovation.Systems
                     }
 
                     var cDuration = GetComponent<CTakesDuration>(entity);
-                    cDuration.IsLocked = buffer.IsEmpty || buffer.Length - amountOnFire <= 0 || Has<CRemovedWall>(entity);
+                    cDuration.IsLocked = buffer.IsEmpty || buffer.Length - incapableInteractors <= 0 || isRemoved;
 
                     if (!cDuration.IsLocked)
                     {
-                        total /= buffer.Length;
+                        if (Has<CPreventUse>(entity))
+                            EntityManager.RemoveComponent<CPreventUse>(entity);
+
+                        total /= buffer.Length - incapableInteractors;
                         if (total != cDuration.Total)
                         {
                             cDuration.Remaining = cDuration.Remaining / cDuration.Total * total;
                             cDuration.Total = total;
                         }
                     }
+                    else
+                    {
+                        Set<CPreventUse>(entity);
+                        if (isRemoved)
+                        {
+                            cDuration.Remaining = 10f;
+                            cDuration.Total = 10f;
+                        }
+                    }
+
                     Set(entity, cDuration);
                 }
             }
         }
+
     }
 }

@@ -43,7 +43,7 @@ namespace KitchenRenovation.GDOs
             {
                 ID = GetCustomGameDataObject<LitDynamite>().ID
             },
-            new CDestroyAfterSpawning()
+            new CDestroyAfterSpawning(),
         };
 
         public override GameObject Prefab => GetPrefab("Dynamite");

@@ -60,7 +60,7 @@ namespace KitchenRenovation.Systems
                             continue;
 
                         // Appliances
-                        if (!cExplode.DestroyAppliances || !PrefManager.Get<bool>("DestroyAppliance"))
+                        if (!cExplode.DestroyAppliances)
                             continue;
 
                         var occupant = GetOccupant(tilePos);

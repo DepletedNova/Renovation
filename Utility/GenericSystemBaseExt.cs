@@ -46,7 +46,7 @@ namespace KitchenRenovation.Utility
             {
                 Total = 30,
                 IsLocked = true,
-                PreserveProgress = true
+                PreserveProgress = true,
             });
             EM.SetComponentData(entity, new CDisplayDuration
             {

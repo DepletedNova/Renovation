@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace KitchenRenovation.Systems
 {
+    [UpdateBefore(typeof(DurationLocks))]
     public class UpdateWallAfterDuration : GameSystemBase
     {
         EntityQuery Query;
@@ -34,38 +35,69 @@ namespace KitchenRenovation.Systems
                 // Check type of interaction
                 bool shouldCreate = false;
                 bool shouldDestroy = false;
-                bool removeToHatch = false;
-                bool dontCreateHatch = false;
+                bool OnlyHatch = false;
                 for (int i2 = 0; i2 < buffer.Length; i2++)
                 {
                     var item = buffer[i2];
                     shouldCreate |= item.Create;
                     shouldDestroy |= item.Destroy;
-                    removeToHatch |= item.Hatch && item.Destroy;
-                    dontCreateHatch |= !item.Hatch && item.Create;
+                    OnlyHatch |= !item.Hatch;
 
                     // Clear buffer items
                     if (Require(item.Interactor, out CDestructive cDest))
                     {
+                        if (Require(item.Interactor, out CDestructiveTool cTool))
+                        {
+                            cTool.CurrentUses++;
+                            if (cTool.MaxUses <= cTool.CurrentUses)
+                            {
+                                EntityManager.DestroyEntity(item.Interactor);
+                                continue;
+                            }
+                            Set(item.Interactor, cTool);
+                        }
+
                         cDest.Target = Entity.Null;
                         cDest.TargetPosition = Vector3.right * 100;
                         Set(item.Interactor, cDest);
                     }
                 }
+                buffer.Clear();
+                OnlyHatch = !OnlyHatch;
 
                 if (shouldDestroy && !Has<CRemovedWall>(entity)) // Destroy
                 {
-                    if (removeToHatch)
+                    if (!Has<CReaching>(entity))
+                    {
                         Set<CReaching>(entity);
-                    else
+                        Set<CHatch>(entity);
+                    }
+                    else if (!OnlyHatch)
+                    {
                         Set<CRemovedWall>(entity);
+                        EntityManager.RemoveComponent<CReaching>(entity);
+                        EntityManager.RemoveComponent<CHatch>(entity);
+                    }
 
                     CSoundEvent.Create(EntityManager, DestroySoundEvent);
+                    
+                    if (Require(entity, out CPosition cPos))
+                    {
+                        CParticleEvent.Create(EntityManager, ParticleEvent.WallDestruction, cPos);
+                    }
                 } 
                 else if (shouldCreate) // Create
                 {
                     // fix this bogus
                 }
+
+                cDuration.Total = 10f;
+                cDuration.Remaining = 10f;
+                cDuration.IsLocked = true;
+                Set(entity, cDuration);
+
+                if (Has<CPreventUse>(entity))
+                    EntityManager.RemoveComponent<CPreventUse>(entity);
 
                 Set<SRebuildReachability>();
             }

@@ -18,7 +18,8 @@ namespace KitchenRenovation.Views
             base.Initialise();
             Particles = new()
             {
-                { ParticleEvent.Explosion, gameObject.GetChild("Explosion").ApplyMaterial<ParticleSystemRenderer>(MaterialUtils.GetExistingMaterial("Paper - Black")) }
+                { ParticleEvent.Explosion, gameObject.GetChild("Explosion").ApplyMaterial<ParticleSystemRenderer>(MaterialUtils.GetExistingMaterial("Paper - Black")) },
+                { ParticleEvent.WallDestruction, gameObject.GetChild("Wall Destruction").ApplyMaterial<ParticleSystemRenderer>(MaterialUtils.GetExistingMaterial("Wood - Corkboard")) }
             };
         }
 

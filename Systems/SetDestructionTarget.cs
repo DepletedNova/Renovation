@@ -61,16 +61,12 @@ namespace KitchenRenovation.Systems
                         continue;
                     }
 
-                    DynamicBuffer<CWallTargetedBy> buffer;
-                    if (!RequireBuffer(target, out buffer))
-                        buffer = EntityManager.AddBuffer<CWallTargetedBy>(target);
-
+                    var buffer = GetBuffer<CWallTargetedBy>(target);
                     buffer.Add(new()
                     {
                         Interactor = entity,
                         Hatch = !cDest.DestroyToWall,
-                        Destroy = true,
-                        Create = false
+                        Destroy = true
                     });
 
                     cDest.TargetPosition = rounded - cPos.Forward(cDest.WallOffset);
@@ -79,7 +75,7 @@ namespace KitchenRenovation.Systems
                     continue;
                 }
 
-                if (!cDest.TargetAppliances || !PrefManager.Get<bool>("DestroyAppliance"))
+                if (!cDest.TargetAppliances)
                     continue;
 
                 if (Has<CAppliance>(fO) && !Has<CAllowMobilePathing>(fO))
