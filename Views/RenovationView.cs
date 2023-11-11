@@ -34,210 +34,168 @@ namespace KitchenRenovation.Views
 
             Data = data;
 
-            CleanObjects();
-
-            var builder = Layout.Builder;
-
-            ModifyWalls(builder);
-            ModifyDoors(builder);
-        }
-
-        public void CleanObjects()
-        {
-            CleanLiners();
-            CleanHatches();
-            CleanDoorstops();
-        }
-
-        public void CleanHatches()
-        {
-            for (int i = Hatches.Count - 1; i >= 0; i--)
+            for (int i = Data.WallModifications.Count - 1; i >= 0; i--)
             {
-                var hatch = Hatches[i];
-                if (Data.Hatches.Any(p => (p.Item1 == hatch.Tile1 && p.Item2 == hatch.Tile2) ||
-                        (p.Item2 == hatch.Tile1 && p.Item1 == hatch.Tile2)) &&
-                    !Data.Destroyed.Any(p => (p.Item1 == hatch.Tile1 && p.Item2 == hatch.Tile2) ||
-                        (p.Item2 == hatch.Tile1 && p.Item1 == hatch.Tile2)))
+                var mod = Data.WallModifications[i];
+
+                var Tile1 = mod.Item1;
+                var Tile2 = mod.Item2;
+
+                // Remove unused
+                if (!TryRemoveAtPosition(Tile1, Tile2, mod.Item3))
                     continue;
 
-                Destroy(hatch.HatchObject);
-                Hatches.RemoveAt(i);
+                if (mod.Item3 == ChangeType.Removed)
+                {
+                    // Removed
+                    GetWallTransforms(Tile1, Tile2, out var pos, out var rot);
+                    var gameObject = Instantiate(LinerPrefab);
+                    gameObject.transform.SetParent(transform, false);
+                    gameObject.transform.position = pos;
+                    gameObject.transform.rotation = rot;
+
+                    Liners.Add(new()
+                    {
+                        LinerObject = gameObject,
+                        Tile1 = Tile1,
+                        Tile2 = Tile2,
+                    });
+                } else
+                {
+                    // Hatch
+                    GetWallTransforms(Tile1, Tile2, out var pos, out var rot);
+                    var gameObject = Instantiate(HatchPrefab);
+                    gameObject.transform.SetParent(transform, false);
+                    gameObject.transform.position = pos;
+                    gameObject.transform.rotation = rot;
+
+                    Hatches.Add(new()
+                    {
+                        HatchObject = gameObject,
+                        Tile1 = Tile1,
+                        Tile2 = Tile2,
+                    });
+                }
             }
-        }
 
-        public void CleanLiners()
-        {
-            for (int i = Liners.Count - 1; i >= 0; i--)
-            {
-                var liner = Liners[i];
-                if (Data.Destroyed.Any(p => (p.Item1 == liner.Tile1 && p.Item2 == liner.Tile2) ||
-                        (p.Item2 == liner.Tile1 && p.Item1 == liner.Tile2)))
-                    continue;
-
-                Destroy(liner.LinerObject);
-                Liners.RemoveAt(i);
-            }
-        }
-
-        public void CleanDoorstops()
-        {
+            // Clear unused doorstops
             for (int i = Doorstops.Count - 1; i >= 0; i--)
             {
-                var stop = Doorstops[i];
-                if (Data.Doorstops.Any(p => stop.Tile == p) && 
-                    !Data.Destroyed.Any(p => p.Item1 == stop.Tile || p.Item2 == stop.Tile) && !Data.Hatches.Any(p => p.Item1 == stop.Tile || p.Item2 == stop.Tile))
+                var doorstop = Doorstops[i];
+                if (!Layout.Builder.Doors.Any(p => p.Tile1.ToWorld() == doorstop.Tile || p.Tile2.ToWorld() == doorstop.Tile) ||
+                    !Data.Doorstops.Any(p => p == doorstop.Tile))
+                {
+                    Destroy(doorstop.Attached);
+                    Doorstops.RemoveAt(i);
+                }
+            }
+
+            // Create or Update doorstops
+            for (int i = 0; i < Layout.Builder.Doors.Count; i++)
+            {
+                var door = Layout.Builder.Doors[i];
+
+                if (door.DoorController == null || door.DoorController.IsExternal || door.MoveAtNight)
                     continue;
 
-                Destroy(stop.Attached);
-                Doorstops.RemoveAt(i);
+                var openerIndex = Data.Doorstops.FindIndex(p => p == door.Tile1.ToWorld() || p == door.Tile2.ToWorld());
+                var shouldOpen = openerIndex != -1 && !door.IsCurrentlyDisabled;
+
+                var doorIndex = Doorstops.FindIndex(p => p.Door.Equals(door));
+                if (doorIndex != -1)
+                {
+                    if (shouldOpen)
+                        return;
+                    else
+                        Doorstops.RemoveAt(doorIndex);
+                }
+
+                var controller = door.DoorController;
+
+                if (shouldOpen)
+                {
+                    Quaternion defaultRot = (Quaternion)ReflectionUtils.GetField<DoorController>("DoorDefaultRotation").GetValue(controller);
+                    controller.ResetAngle();
+                    var offset = Data.Doorstops[openerIndex] - door.DoorGameObject.transform.position;
+                    var theta = Mathf.Atan2(offset.x, offset.z) * Mathf.Rad2Deg - (defaultRot.eulerAngles.y + door.DoorGameObject.transform.rotation.eulerAngles.y);
+                    controller.TargetPosition = Math.Abs(theta) % 360 < 180 ? 135 : -135;
+
+                    var gameObject = Instantiate(DoorstopPrefab);
+                    gameObject.transform.SetParent(transform, false);
+                    gameObject.transform.position = door.DoorGameObject.transform.position;
+                    gameObject.transform.rotation = door.DoorGameObject.transform.rotation;
+
+                    gameObject.GetComponent<FixedJoint>().connectedBody = controller.Hinge.gameObject.GetComponent<Rigidbody>();
+
+                    Doorstops.Add(new Doorstop
+                    {
+                        Attached = gameObject,
+                        Door = door,
+                        Tile = Data.Doorstops[openerIndex]
+                    });
+                }
+
+                controller.SetSpring(shouldOpen);
+                controller.SetCollision(!shouldOpen);
             }
         }
 
-        public void ModifyWalls(LayoutBuilder builder)
+        private bool TryRemoveAtPosition(Vector3 Tile1, Vector3 Tile2, ChangeType change)
         {
-            for (int i = builder.Walls.Count - 1; i >= 0; i--)
+            var builder = Layout.Builder;
+
+            // Walls
+            var wallIndex = builder.Walls.FindIndex(p => 
+                (p.Tile1.ToWorld() == Tile1 && p.Tile2.ToWorld() == Tile2) || 
+                (p.Tile2.ToWorld() == Tile1 && p.Tile1.ToWorld() == Tile2));
+            if (wallIndex != -1)
             {
-                var wall = builder.Walls[i];
-                if (wall.Collider == null)
-                    continue;
-
-                var tile1 = wall.Tile1.ToWorld();
-                var tile2 = wall.Tile2.ToWorld();
-
-                if (DestroyWall(tile1, tile2) || DestroyToHatch(tile1, tile2))
+                var wall = builder.Walls[wallIndex];
+                if (wall.Collider != null)
                 {
                     Destroy(wall.Collider.gameObject);
-                    builder.Walls.RemoveAt(i);
-                    continue;
+                    builder.Walls.RemoveAt(wallIndex);
                 }
             }
-        }
 
-        public void ModifyDoors(LayoutBuilder builder)
-        {
-            for (int i = builder.Doors.Count - 1; i >= 0; i--)
+            // Doors
+            var doorIndex = 
+                builder.Doors.FindIndex(p => (p.Tile1.ToWorld() == Tile1 && p.Tile2.ToWorld() == Tile2) || (p.Tile2.ToWorld() == Tile1 && p.Tile1.ToWorld() == Tile2));
+            if (doorIndex != -1)
             {
-                var door = builder.Doors[i];
-                if (door.DoorController == null)
-                    continue;
-
-                var tile1 = door.Tile1.ToWorld();
-                var tile2 = door.Tile2.ToWorld();
-
-                if (DestroyWall(tile1, tile2))
+                var door = builder.Doors[doorIndex];
+                if (door.DoorController != null)
                 {
                     Destroy(door.DoorController.gameObject);
-                    builder.Doors.RemoveAt(i);
-                    continue;
+                    builder.Walls.RemoveAt(wallIndex);
                 }
-                OpenDoor(door, tile1, tile2);
             }
-        }
 
-        public void ModifyRenovated()
-        {
-            for (int i = Hatches.Count - 1; i >= 0; i--)
+            // Hatches
+            var hatchIndex = Hatches.FindIndex(p => (p.Tile1 == Tile1 && p.Tile2 == Tile2) || (p.Tile2 == Tile1 && p.Tile1 == Tile2));
+            if (hatchIndex != -1)
             {
-                var hatch = Hatches[i];
-                var tile1 = hatch.Tile1.ToWorld();
-                var tile2 = hatch.Tile2.ToWorld();
+                if (change == ChangeType.Hatch)
+                    return false;
 
-                DestroyWall(tile1, tile2);
+                var hatch = Hatches[hatchIndex];
+                Destroy(hatch.HatchObject);
+                Hatches.RemoveAt(hatchIndex);
             }
-        }
 
-        public bool DestroyWall(Vector3 Tile1, Vector3 Tile2)
-        {
-            if (!Data.Destroyed.Any(p => (p.Item1 == Tile1 && p.Item2 == Tile2) ||
-                        (p.Item2 == Tile1 && p.Item1 == Tile2)))
-                return false;
-
-            GetWallTransforms(Tile1, Tile2, out var pos, out var rot);
-            var gameObject = Instantiate(LinerPrefab);
-            gameObject.transform.SetParent(transform, false);
-            gameObject.transform.position = pos;
-            gameObject.transform.rotation = rot;
-
-            Liners.Add(new()
+            // Removed
+            var removeIndex = Liners.FindIndex(p => (p.Tile1 == Tile1 && p.Tile2 == Tile2) || (p.Tile2 == Tile1 && p.Tile1 == Tile2));
+            if (removeIndex != -1)
             {
-                LinerObject = gameObject,
-                Tile1 = Tile1,
-                Tile2 = Tile2,
-            });
+                if (change == ChangeType.Removed)
+                    return false;
+
+                var remove = Liners[removeIndex];
+                Destroy(remove.LinerObject);
+                Liners.RemoveAt(removeIndex);
+            }
 
             return true;
-        }
-
-        public bool DestroyToHatch(Vector3 Tile1, Vector3 Tile2)
-        {
-            if (!Data.Hatches.Any(p => (p.Item1 == Tile1 && p.Item2 == Tile2) ||
-                    (p.Item2 == Tile1 && p.Item1 == Tile2)) ||
-                Data.Destroyed.Any(p => (p.Item1 == Tile1 && p.Item2 == Tile2) ||
-                    (p.Item2 == Tile1 && p.Item1 == Tile2)))
-                return false;
-
-            GetWallTransforms(Tile1, Tile2, out var pos, out var rot);
-            var gameObject = Instantiate(HatchPrefab);
-            gameObject.transform.SetParent(transform, false);
-            gameObject.transform.position = pos;
-            gameObject.transform.rotation = rot;
-
-            Hatches.Add(new()
-            {
-                HatchObject = gameObject,
-                Tile1 = Tile1,
-                Tile2 = Tile2,
-            });
-
-            return true;
-        }
-
-        public void OpenDoor(Door door, Vector3 Tile1, Vector3 Tile2)
-        {
-            var controller = door.DoorController;
-            if (controller.IsExternal || door.MoveAtNight)
-                return;
-
-            var OpenerIndex = Data.Doorstops.FindIndex(p => p == Tile1 || p == Tile2);
-            var shouldOpen = OpenerIndex != -1;
-
-            var DoorIndex = Doorstops.FindIndex(p => p.Door.Equals(door));
-            if (DoorIndex != -1)
-            {
-                if (shouldOpen)
-                    return;
-                else
-                    Doorstops.RemoveAt(DoorIndex);
-            }
-
-            if (door.IsCurrentlyDisabled)
-                shouldOpen = false;
-
-            if (shouldOpen)
-            {
-                Quaternion defaultRot = (Quaternion)ReflectionUtils.GetField<DoorController>("DoorDefaultRotation").GetValue(controller);
-                controller.ResetAngle();
-                var offset = Data.Doorstops[OpenerIndex] - door.DoorGameObject.transform.position;
-                var theta = Mathf.Atan2(offset.x, offset.z) * Mathf.Rad2Deg - (defaultRot.eulerAngles.y + door.DoorGameObject.transform.rotation.eulerAngles.y);
-                controller.TargetPosition = Math.Abs(theta) % 360 < 180 ? 135 : -135;
-
-                var gameObject = Instantiate(DoorstopPrefab);
-                gameObject.transform.SetParent(transform, false);
-                gameObject.transform.position = door.DoorGameObject.transform.position;
-                gameObject.transform.rotation = door.DoorGameObject.transform.rotation;
-
-                gameObject.GetComponent<FixedJoint>().connectedBody = controller.Hinge.gameObject.GetComponent<Rigidbody>();
-
-                Doorstops.Add(new Doorstop
-                {
-                    Attached = gameObject,
-                    Door = door,
-                    Tile = Data.Doorstops[OpenerIndex]
-                });
-            }
-
-            controller.SetSpring(shouldOpen);
-            controller.SetCollision(!shouldOpen);
         }
 
         public void GetWallTransforms(Vector3 Tile1, Vector3 Tile2, out Vector3 Position, out Quaternion Rotation)
@@ -268,15 +226,20 @@ namespace KitchenRenovation.Views
             public Vector3 Tile;
         }
 
+        public enum ChangeType
+        {
+            Removed,
+            Hatch,
+        }
+
         [MessagePackObject]
         public struct ViewData : IViewData, IViewData.ICheckForChanges<ViewData>
         {
-            [Key(1)] public List<ValueTuple<Vector3, Vector3>> Destroyed;
-            [Key(1)] public List<ValueTuple<Vector3, Vector3>> Hatches;
+            [Key(1)] public List<ValueTuple<Vector3, Vector3, ChangeType>> WallModifications;
             [Key(2)] public List<Vector3> Doorstops;
 
             public bool IsChangedFrom(ViewData check) =>
-                !Destroyed.IsEqual(check.Destroyed) || !Hatches.IsEqual(check.Hatches) || !Doorstops.IsEqual(check.Doorstops);
+                !WallModifications.IsEqual(check.WallModifications) || !Doorstops.IsEqual(check.Doorstops);
         }
 
         private class UpdateView : IncrementalViewSystemBase<ViewData>
@@ -300,20 +263,17 @@ namespace KitchenRenovation.Views
 
             protected override void OnUpdate()
             {
-                List<ValueTuple<Vector3, Vector3>> destroyed = new();
-                List<ValueTuple<Vector3, Vector3>> hatches = new();
+                List<ValueTuple<Vector3, Vector3, ChangeType>> changes = new();
                 using (var walls = ModifiedWalls.ToEntityArray(Allocator.Temp))
                 {
                     for (int i = 0; i < walls.Length; i++)
                     {
+                        var entity = walls[i];
                         var wall = GetComponent<CTargetableWall>(walls[i]);
-                        if (Has<CRemovedWall>(walls[i]))
+                        var hatch = Has<CHatch>(entity);
+                        if (hatch || Has<CRemovedWall>(entity))
                         {
-                            destroyed.Add((wall.Tile1, wall.Tile2));
-                        } 
-                        else if (Has<CHatch>(walls[i]))
-                        {
-                            hatches.Add((wall.Tile1, wall.Tile2));
+                            changes.Add((wall.Tile1, wall.Tile2, hatch ? ChangeType.Hatch : ChangeType.Removed));
                         }
                     }
                 }
@@ -336,8 +296,7 @@ namespace KitchenRenovation.Views
                     {
                         SendUpdate(views[i], new ViewData
                         {
-                            Destroyed = destroyed,
-                            Hatches = hatches,
+                            WallModifications = changes,
                             Doorstops = openers,
                         });
                     }
