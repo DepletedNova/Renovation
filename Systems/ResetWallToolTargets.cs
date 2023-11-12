@@ -5,6 +5,7 @@ using Unity.Entities;
 
 namespace KitchenRenovation.Systems
 {
+    [UpdateAfter(typeof(DurationLocks))]
     public class ResetWallToolTargets : GameSystemBase
     {
         EntityQuery Query;
@@ -29,7 +30,8 @@ namespace KitchenRenovation.Systems
                 if (!Require(user, out CAttemptingInteraction Attempt) || !Require(user, out CPosition cPos))
                     continue;
 
-                if (cWall.Tile1.IsSameTile(cPos.Position) && cWall.Tile2.IsSameTile(cPos.Position + cPos.Forward(1f)) &&
+                var forwardPos = cPos.Position + cPos.Forward(1f);
+                if (((cWall.Tile1.IsSameTile(cPos.Position) && cWall.Tile2.IsSameTile(forwardPos)) || (cWall.Tile1.IsSameTile(forwardPos) && cWall.Tile2.IsSameTile(cPos.Position))) &&
                     Attempt.Type == InteractionType.Act)
                     continue;
 

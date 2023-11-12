@@ -3,7 +3,7 @@ using Unity.Entities;
 
 namespace KitchenRenovation.Systems
 {
-    public class FilterByPreference : ShopBuilderFilter
+    /*public class FilterByPreference : ShopBuilderFilter
     {
         protected override void Filter(ref CShopBuilderOption option)
         {
@@ -16,5 +16,5 @@ namespace KitchenRenovation.Systems
                 option.FilteredBy = this;
             }
         }
-    }
+    }*/
 }

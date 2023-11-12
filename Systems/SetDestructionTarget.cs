@@ -47,12 +47,13 @@ namespace KitchenRenovation.Systems
                     continue;
 
                 var forward = rounded - cPos.Forward(1f);
+                var cO = GetOccupant(rounded);
                 var fO = GetOccupant(forward);
 
                 var cT = GetTile(rounded);
                 var fT = GetTile(forward);
 
-                if ((!this.TryGetFeature(rounded, forward, out var feature) || !feature.Type.IsDoor() || fO != Entity.Null) &&
+                if ((!this.TryGetFeature(rounded, forward, out var feature) || !feature.Type.IsDoor() || fO != Entity.Null || cO != Entity.Null) &&
                     this.GetTargetableFeature(cT, fT, out var target) && Has<CTargetableWall>(target) && !Has<CRemovedWall>(target))
                 {
                     if (!cDest.DestroyToWall && (feature.Type.IsReaching() || Has<CReaching>(target)))

@@ -24,7 +24,7 @@ namespace KitchenRenovation
     {
         public const string NAME = "Renovation";
         public const string GUID = "nova.renovation";
-        public const string VERSION = "0.2.2";
+        public const string VERSION = "1.0.0";
 
         public Main() : base(GUID, NAME, "Zoey Davis", VERSION, ">=1.0.0", Assembly.GetExecutingAssembly()) { }
 
@@ -32,11 +32,12 @@ namespace KitchenRenovation
 
         // References
         public static SoundEvent DestroySoundEvent;
+        public static SoundEvent ExplosionSoundEvent;
         public static CustomViewType PurchaseView;
         public static CustomViewType RenovationView;
         public static CustomViewType ParticleEventView;
-        public static ShoppingTags RenovationUtilityTag = (ShoppingTags)1048576;
-        public static ShoppingTags RenovationDestructiveTag = (ShoppingTags)524288;
+        public static ShoppingTags MiscShoppingTag = (ShoppingTags)1048576;
+        public static ShoppingTags RemovalShoppingTag = (ShoppingTags)524288;
 
         private void PostActivate()
         {
@@ -49,7 +50,9 @@ namespace KitchenRenovation
 
         private void BuildGameData(GameData gameData)
         {
+            Bundle.LoadAllAssets<AudioClip>();
             SetupDestroySoundEvents(gameData);
+            SetupExplosionSoundEvents(gameData);
             PreferenceOverrides(gameData);
         }
 
@@ -60,8 +63,6 @@ namespace KitchenRenovation
             if (!gameData.ReferableObjects.Clips.ContainsKey(DestroySoundEvent))
                 gameData.ReferableObjects.Clips.Add(DestroySoundEvent, new AudioAssetRandom());
 
-            Bundle.LoadAllAssets<AudioClip>();
-
             var d1 = GetAsset<AudioClip>("Destroy_1"); d1.LoadAudioData();
             var d2 = GetAsset<AudioClip>("Destroy_2"); d2.LoadAudioData();
             var d3 = GetAsset<AudioClip>("Destroy_3"); d3.LoadAudioData();
@@ -69,6 +70,20 @@ namespace KitchenRenovation
             typeof(AudioAssetRandom)
                 .GetField("Clips", BindingFlags.Instance | BindingFlags.NonPublic)
                 .SetValue(gameData.ReferableObjects.Clips[DestroySoundEvent], new List<AudioClip>() { d1, d2, d3 });
+        }
+
+        private void SetupExplosionSoundEvents(GameData gameData)
+        {
+            ExplosionSoundEvent = (SoundEvent)VariousUtils.GetID(GUID + "-EXPLODE");
+
+            if (!gameData.ReferableObjects.Clips.ContainsKey(ExplosionSoundEvent))
+                gameData.ReferableObjects.Clips.Add(ExplosionSoundEvent, new AudioAsset());
+
+            var audio = GetAsset<AudioClip>("Explosion"); audio.LoadAudioData();
+
+            typeof(AudioAsset)
+                .GetField("Clip", BindingFlags.Instance | BindingFlags.NonPublic)
+                .SetValue(gameData.ReferableObjects.Clips[ExplosionSoundEvent], audio);
         }
 
         private GameObject SetupPurchaseView()

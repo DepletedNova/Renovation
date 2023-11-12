@@ -24,7 +24,7 @@ namespace KitchenRenovation.GDOs
             },
             new CDestructiveTool
             {
-                MaxUses = 2
+                MaxUses = 1
             }
         };
 

@@ -49,7 +49,7 @@ namespace KitchenRenovation.GDOs
                 IgnoreWalls = true,
                 Speed = 0.35f
             },
-            new CInteractDestroysDisabled()
+            new CInteractRemove()
         };
 
         public override GameObject Prefab => GetPrefab("Mobile Wall Drill");

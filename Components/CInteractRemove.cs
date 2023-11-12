@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace KitchenRenovation.Components
 {
     [StructLayout(LayoutKind.Sequential, Size = 1)]
-    public struct CInteractDestroysDisabled : IApplianceProperty
+    public struct CInteractRemove : IApplianceProperty
     {
     }
 }

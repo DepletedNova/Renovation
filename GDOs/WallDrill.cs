@@ -17,74 +17,44 @@ namespace KitchenRenovation.GDOs
         public override string UniqueNameID => "Wall Drill";
         public override List<(Locale, ApplianceInfo)> InfoList => new()
         {
-            (Locale.English, CreateApplianceInfo("Drill", "Quite destructive!", new List<Appliance.Section>()
+            (Locale.English, CreateApplianceInfo("Drill", "Drives forward during the day and destroys any walls or hatches. Blocked by appliances", new List<Appliance.Section>()
             {
                 new()
                 {
-                    Description = "Can not be copied or discounted"
+                    Title = "Limited",
+                    Description = "Cannot be copied. One time use"
                 },
                 new()
                 {
                     Title = "Emergency Switch",
-                    Description = "Can be interacted to be shut off during the day"
-                },
-                new()
-                {
-                    Title = "Unstoppable",
-                    Description = "Drives forward during the day and destroys walls. Can be blocked by appliances"
-                },
-                new()
-                {
-                    Title = "Fueled",
-                    Description = "Requires payment per day of use. Payment increases per day in overtime",
-                    RangeDescription = "<sprite name=\"coin\"> 500"
+                    Description = "Interact to remove"
                 },
             }, new()))
         };
         public override bool IsPurchasable => true;
-        public override PriceTier PriceTier => PriceTier.VeryExpensive;
-        public override RarityTier RarityTier => RarityTier.Common;
-        public override ShoppingTags ShoppingTags => RenovationDestructiveTag;
+        public override int PurchaseCostOverride => 750;
+        public override RarityTier RarityTier => RarityTier.Rare;
+        public override ShoppingTags ShoppingTags => RemovalShoppingTag;
+
+        public override List<Appliance> Upgrades => new()
+        {
+            GetCastedGDO<Appliance, Dynamite>(),
+        };
 
         public override List<IApplianceProperty> Properties => new()
         {
             new CAllowMobilePathing(),
-            new CTakesDuration
-            {
-                Total = 2f,
-                Manual = true,
-                Mode = InteractionMode.Appliances,
-                ManualNeedsEmptyHands = true,
-            },
-            new CDisplayDuration
-            {
-                Process = ProcessReferences.Purchase
-            },
             new CSpawnSpecialMobile
             {
-                ID = GetCustomGameDataObject<MobileWallDrill>().ID
+                ID = GetCustomGameDataObject<MobileWallDrill>().ID,
             },
-            new CPurchaseable
-            {
-                Cost = 500
-            },
-            new CRampingCost
-            {
-                IncreasedCost = 25,
-                DayIncrement = 1,
-                MinimumDay = 15,
-                UseBoughtDay = false
-            },
-            new CIsDailyPurchase()
+            new CDestroyAfterSpawning(),
         };
 
         public override GameObject Prefab => GetPrefab("Wall Drill");
         public override void SetupPrefab(GameObject prefab)
         {
-            prefab.ApplyMaterialToChild("Base", "Metal Very Dark");
-            
             prefab.TryAddComponent<NightObjectView>().Object = SetupMaterials(prefab.GetChild("Drill"));
-            prefab.TryAddComponent<PurchaseLightView>().Renderer = prefab.ApplyMaterialToChild("Light", "Indicator Light On").GetComponent<MeshRenderer>();
         }
 
         internal static GameObject SetupMaterials(GameObject prefab)

@@ -3,10 +3,10 @@ using KitchenRenovation.Components;
 
 namespace KitchenRenovation.Systems
 {
-    public class InteractDestroysDisabled : ItemInteractionSystem
+    public class InteractDestroy : ItemInteractionSystem
     {
         protected override bool IsPossible(ref InteractionData data) =>
-            Has<CInteractDestroysDisabled>(data.Target) && Has<CIsInactive>();
+            Has<CInteractRemove>(data.Target);
 
         protected override void Perform(ref InteractionData data)
         {

@@ -20,19 +20,15 @@ namespace KitchenRenovation.GDOs
             {
                 new()
                 {
-                    Description = "Can not be copied or discounted"
+                    Title = "Scarce",
+                    Description = "Cannot be copied"
                 },
-                new()
-                {
-                    Title = "Stopping",
-                    Description = "During the day, nearby doors will be opened in the direction of the doorstop."
-                }
             }, new()))
         };
         public override bool IsPurchasable => true;
-        public override PriceTier PriceTier => PriceTier.Expensive;
+        public override PriceTier PriceTier => PriceTier.Medium;
         public override RarityTier RarityTier => RarityTier.Uncommon;
-        public override ShoppingTags ShoppingTags => RenovationUtilityTag | ShoppingTags.Misc;
+        public override ShoppingTags ShoppingTags => MiscShoppingTag | ShoppingTags.Misc;
         public override OccupancyLayer Layer => OccupancyLayer.Floor;
 
         public override List<IApplianceProperty> Properties => new()

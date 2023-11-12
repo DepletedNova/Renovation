@@ -11,7 +11,7 @@ namespace KitchenRenovation.Patches
         [HarmonyPostfix]
         static void MeetsConditions_Postfix(Entity ent, CDeskTarget conditions, bool needs_enchant, DeskPickTarget __instance, ref bool __result)
         {
-            if (conditions.RequireUpgrade || !__result)
+            if (!conditions.RequireCopyable || !__result)
                 return;
 
             var EM = __instance.EntityManager;

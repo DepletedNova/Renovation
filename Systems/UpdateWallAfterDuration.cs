@@ -51,6 +51,9 @@ namespace KitchenRenovation.Systems
                             cTool.CurrentUses++;
                             if (cTool.MaxUses <= cTool.CurrentUses)
                             {
+                                if (Require(item.Interactor, out CToolInUse cUsage) && Has<CToolUser>(cUsage.User))
+                                    Set(cUsage.User, new CToolUser { CurrentTool = Entity.Null });
+
                                 EntityManager.DestroyEntity(item.Interactor);
                                 continue;
                             }
@@ -91,8 +94,7 @@ namespace KitchenRenovation.Systems
                     // fix this bogus
                 }
 
-                cDuration.Total = 10f;
-                cDuration.Remaining = 10f;
+                cDuration.Remaining = cDuration.Total;
                 cDuration.IsLocked = true;
                 Set(entity, cDuration);
 

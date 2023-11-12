@@ -7,17 +7,17 @@ using UnityEngine;
 
 namespace KitchenRenovation.GDOs
 {
-    public class WallDrillDebug : CustomAppliance
+    public class WallDrillDebug : CustomAppliance, IWontRegister
     {
         public override string UniqueNameID => "Wall Drill Debug";
         public override List<(Locale, ApplianceInfo)> InfoList => new()
         {
-            (Locale.English, CreateApplianceInfo("Debug Drill", "I didn't want to pay", new List<Appliance.Section>()
+            (Locale.English, CreateApplianceInfo("Debug Drill", "I didn't want to pay nor am I updating the sections", new List<Appliance.Section>()
             {
                 new()
                 {
                     Title = "Driller",
-                    Description = "Drives forward during the day and destroys both appliances and walls"
+                    Description = "Drives forward during the day and destroys walls"
                 },
             }, new()))
         };

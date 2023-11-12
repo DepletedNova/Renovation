@@ -10,28 +10,28 @@ namespace KitchenRenovation.GDOs
         public override string UniqueNameID => "Sledgehammer Source";
         public override List<(Locale, ApplianceInfo)> InfoList => new()
         {
-            (Locale.English, CreateApplianceInfo("Sledgehammer", "Provides a sledgehammer", new List<Appliance.Section>()
+            (Locale.English, CreateApplianceInfo("Sledgehammer", "Destroys walls to a hatch", new List<Appliance.Section>()
             {
                 new()
                 {
-                    Description = "Can not be copied or discounted"
-                },
-                new()
-                {
-                    Title = "Destructive",
-                    Description = "Interacting with a wall during the day will destroy it to a hatch",
-                },
-                new()
-                {
                     Title = "Limited",
-                    Description = "Sledgehammers can only be used twice"
+                    Description = "Cannot be copied. One time use"
+                },
+                new()
+                {
+                    Description = "Can only be used once"
                 }
             }, new()))
         };
         public override bool IsPurchasable => true;
-        public override PriceTier PriceTier => PriceTier.VeryExpensive;
-        public override RarityTier RarityTier => RarityTier.Rare;
-        public override ShoppingTags ShoppingTags => RenovationUtilityTag;
+        public override PriceTier PriceTier => PriceTier.Expensive;
+        public override RarityTier RarityTier => RarityTier.Uncommon;
+        public override ShoppingTags ShoppingTags => MiscShoppingTag | RemovalShoppingTag;
+
+        public override List<Appliance> Upgrades => new()
+        {
+            GetCastedGDO<Appliance, WallDrill>(),
+        };
 
         public override List<IApplianceProperty> Properties => new()
         {

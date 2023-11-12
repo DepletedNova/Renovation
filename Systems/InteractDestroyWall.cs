@@ -12,12 +12,8 @@ namespace KitchenRenovation.Systems
         protected override bool RequireHold => true;
         protected override InteractionType RequiredType => InteractionType.Act;
 
-        private CToolUser cToolUser;
-        private CDestructiveTool cDestTool;
-        private CDestructive cDestructive;
-
         protected override bool IsPossible(ref InteractionData data) =>
-            Require(data.Interactor, out cToolUser) && Require(cToolUser.CurrentTool, out cDestTool) && Require(cToolUser.CurrentTool, out cDestructive);
+            Require(data.Interactor, out CToolUser cToolUser) && Has<CDestructiveTool>(cToolUser.CurrentTool) && Has<CDestructive>(cToolUser.CurrentTool);
 
         protected override void Perform(ref InteractionData data)
         {
@@ -25,7 +21,9 @@ namespace KitchenRenovation.Systems
             if (!Require(data.Interactor, out CPosition cPos))
                 return;
 
+            var cToolUser = GetComponent<CToolUser>(data.Interactor);
             var tool = cToolUser.CurrentTool;
+            var cDestructive = GetComponent<CDestructive>(tool);
 
             if (Has<CTargetableWall>(cDestructive.Target))
             {

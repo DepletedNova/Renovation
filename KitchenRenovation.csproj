@@ -140,9 +140,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Components\CBreachAfterDuration.cs" />
     <Compile Include="Components\CDestructiveTool.cs" />
-    <Compile Include="Components\Spawn\CExplodeAfterDuration.cs" />
-    <Compile Include="Components\Spawn\CInteractDestroysDisabled.cs" />
+    <Compile Include="Components\CDynamite.cs" />
+    <Compile Include="Components\CExplodeAfterDuration.cs" />
+    <Compile Include="Components\CInteractRemove.cs" />
     <Compile Include="Components\Walls\CHatch.cs" />
     <Compile Include="Components\CParticleEvent.cs" />
     <Compile Include="Components\Spawn\CDestroyAfterSpawning.cs" />
@@ -169,7 +171,7 @@
     <Compile Include="GDOs\DestroyWallProcess.cs" />
     <Compile Include="GDOs\Doorstop.cs" />
     <Compile Include="GDOs\Dynamite.cs" />
-    <Compile Include="GDOs\LitDynamite.cs" />
+    <Compile Include="GDOs\CreativeDynamite.cs" />
     <Compile Include="GDOs\MobileWallDrill.cs" />
     <Compile Include="GDOs\Sledgehammer.cs" />
     <Compile Include="GDOs\SledgehammerSource.cs" />
@@ -182,16 +184,18 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Systems\AddPurchaseAfterDuration.cs" />
     <Compile Include="Systems\ApplianceDestructionLock.cs" />
+    <Compile Include="Systems\BreachAfterDuration.cs" />
     <Compile Include="Systems\CreateRenovationShops.cs" />
     <Compile Include="Systems\DestroyApplianceAfterDuration.cs" />
     <Compile Include="Systems\DestroyParticleEvents.cs" />
     <Compile Include="Systems\ExplodeAfterDuration.cs" />
     <Compile Include="Systems\FilterByPreference.cs" />
-    <Compile Include="Systems\InteractDestroysDisabled.cs" />
+    <Compile Include="Systems\InteractDestroy.cs" />
     <Compile Include="Systems\InteractDestroyWall.cs" />
     <Compile Include="Systems\ManageCostIndicator.cs" />
     <Compile Include="Systems\PurchaseableLock.cs" />
     <Compile Include="Systems\RemoveDailyPurchases.cs" />
+    <Compile Include="Systems\RemoveInactiveFromDynamite.cs" />
     <Compile Include="Systems\ResetWallToolTargets.cs" />
     <Compile Include="Systems\UpdateWallAfterDuration.cs" />
     <Compile Include="Systems\EnsureRenovationView.cs" />
@@ -207,12 +211,16 @@
     <Compile Include="Utility\Vector3Ext.cs" />
     <Compile Include="Views\CostIndicatorView.cs" />
     <Compile Include="Views\DestructiveDrillView.cs" />
+    <Compile Include="Views\LayoutHighlightView.cs" />
+    <Compile Include="Views\LitFuseView.cs" />
     <Compile Include="Views\NightObjectView.cs" />
     <Compile Include="Views\ParticleView.cs" />
     <Compile Include="Views\PurchaseLightView.cs" />
     <Compile Include="Views\RenovationView.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="RenovationIcon.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy "$(TargetDir)$(TargetFileName)" "C:\Program Files (x86)\Steam\steamapps\common\PlateUp\PlateUp\Mods\Renovated\content" /y

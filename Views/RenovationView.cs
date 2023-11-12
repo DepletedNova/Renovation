@@ -34,6 +34,29 @@ namespace KitchenRenovation.Views
 
             Data = data;
 
+            // Remove unused modifications
+            for (int i = Hatches.Count - 1; i >= 0; i--) // Unused Hatches
+            {
+                var hatch = Hatches[i];
+                if (Data.WallModifications.Any(p => p.Item3 == ChangeType.Hatch &&
+                    ((hatch.Tile1 == p.Item1 && hatch.Tile2 == p.Item2) || (hatch.Tile1 == p.Item2 && hatch.Tile2 == p.Item1))))
+                    continue;
+
+                Destroy(hatch.HatchObject);
+                Hatches.RemoveAt(i);
+            }
+            for (int i = Liners.Count - 1; i >=0; i--) // Unused Liners
+            {
+                var liner = Liners[i];
+                if (Data.WallModifications.Any(p => p.Item3 == ChangeType.Removed &&
+                    ((liner.Tile1 == p.Item1 && liner.Tile2 == p.Item2) || (liner.Tile1 == p.Item2 && liner.Tile2 == p.Item1))))
+                    continue;
+
+                Destroy(liner.LinerObject);
+                Liners.RemoveAt(i);
+            }
+
+            // Apply modifications
             for (int i = Data.WallModifications.Count - 1; i >= 0; i--)
             {
                 var mod = Data.WallModifications[i];
@@ -41,7 +64,7 @@ namespace KitchenRenovation.Views
                 var Tile1 = mod.Item1;
                 var Tile2 = mod.Item2;
 
-                // Remove unused
+                // Remove anything in spot
                 if (!TryRemoveAtPosition(Tile1, Tile2, mod.Item3))
                     continue;
 
@@ -82,8 +105,8 @@ namespace KitchenRenovation.Views
             for (int i = Doorstops.Count - 1; i >= 0; i--)
             {
                 var doorstop = Doorstops[i];
-                if (!Layout.Builder.Doors.Any(p => p.Tile1.ToWorld() == doorstop.Tile || p.Tile2.ToWorld() == doorstop.Tile) ||
-                    !Data.Doorstops.Any(p => p == doorstop.Tile))
+                if (!Layout.Builder.Doors.Any(p => p.Tile1.ToWorld().IsSameTile(doorstop.Tile) || p.Tile2.ToWorld().IsSameTile(doorstop.Tile)) ||
+                    !Data.Doorstops.Any(p => p.IsSameTile(doorstop.Tile)))
                 {
                     Destroy(doorstop.Attached);
                     Doorstops.RemoveAt(i);
@@ -107,7 +130,10 @@ namespace KitchenRenovation.Views
                     if (shouldOpen)
                         return;
                     else
+                    {
+                        Destroy(Doorstops[doorIndex].Attached);
                         Doorstops.RemoveAt(doorIndex);
+                    }
                 }
 
                 var controller = door.DoorController;
@@ -164,11 +190,9 @@ namespace KitchenRenovation.Views
             if (doorIndex != -1)
             {
                 var door = builder.Doors[doorIndex];
-                if (door.DoorController != null)
-                {
-                    Destroy(door.DoorController.gameObject);
-                    builder.Walls.RemoveAt(wallIndex);
-                }
+                Destroy(door.HatchGameObject);
+                Destroy(door.DoorGameObject);
+                builder.Doors.RemoveAt(doorIndex);
             }
 
             // Hatches
@@ -235,8 +259,8 @@ namespace KitchenRenovation.Views
         [MessagePackObject]
         public struct ViewData : IViewData, IViewData.ICheckForChanges<ViewData>
         {
-            [Key(1)] public List<ValueTuple<Vector3, Vector3, ChangeType>> WallModifications;
-            [Key(2)] public List<Vector3> Doorstops;
+            [Key(0)] public List<ValueTuple<Vector3, Vector3, ChangeType>> WallModifications;
+            [Key(1)] public List<Vector3> Doorstops;
 
             public bool IsChangedFrom(ViewData check) =>
                 !WallModifications.IsEqual(check.WallModifications) || !Doorstops.IsEqual(check.Doorstops);
@@ -273,7 +297,7 @@ namespace KitchenRenovation.Views
                         var hatch = Has<CHatch>(entity);
                         if (hatch || Has<CRemovedWall>(entity))
                         {
-                            changes.Add((wall.Tile1, wall.Tile2, hatch ? ChangeType.Hatch : ChangeType.Removed));
+                            changes.Add((wall.Tile1, wall.Tile2, !hatch ? ChangeType.Removed : ChangeType.Hatch));
                         }
                     }
                 }
@@ -304,5 +328,6 @@ namespace KitchenRenovation.Views
 
             }
         }
+
     }
 }

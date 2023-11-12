@@ -15,8 +15,8 @@ namespace KitchenRenovation.Systems
             var day = GetSingleton<SDay>().Day;
             if (day > 0 && day % 5 == 0)
             {
-                AddShop(RenovationUtilityTag);
-                AddShop(RenovationDestructiveTag);
+                AddShop(MiscShoppingTag);
+                AddShop(RemovalShoppingTag);
             }
         }
 

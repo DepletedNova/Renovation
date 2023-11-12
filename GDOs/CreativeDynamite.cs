@@ -1,7 +1,6 @@
 ﻿using Kitchen;
 using KitchenData;
 using KitchenLib.Customs;
-using KitchenLib.References;
 using KitchenLib.Utils;
 using KitchenRenovation.Components;
 using KitchenRenovation.Views;
@@ -10,19 +9,18 @@ using UnityEngine;
 
 namespace KitchenRenovation.GDOs
 {
-    public class Dynamite : CustomAppliance, IRequirePreference, IBlockDesks
+    public class CreativeDynamite : CustomAppliance
     {
-        public string PreferenceName() => "Dynamite";
-
-        public override string UniqueNameID => "Dynamite";
+        public override string UniqueNameID => "Lit Dynamite";
         public override List<(Locale, ApplianceInfo)> InfoList => new()
         {
-            (Locale.English, CreateApplianceInfo("Dynamite", "A shaped charge in spirit", new List<Appliance.Section>()
+            (Locale.English, CreateApplianceInfo("Creative Dynamite", "For creative usage!", new List<Appliance.Section>()
             {
                 new()
                 {
-                    Title = "Limited",
-                    Description = "Cannot be copied. One time use"
+                    Title = "Fuse",
+                    Description = "Interact to light the fuse",
+                    RangeDescription = "Only at night"
                 },
                 new()
                 {
@@ -32,44 +30,39 @@ namespace KitchenRenovation.GDOs
                 }
             }, new()))
         };
-        public override bool IsPurchasable => true;
-        public override int PurchaseCostOverride => 500;
-        public override RarityTier RarityTier => RarityTier.Rare;
-        public override ShoppingTags ShoppingTags => RemovalShoppingTag;
-        public override OccupancyLayer Layer => OccupancyLayer.Wall;
 
         public override List<IApplianceProperty> Properties => new()
         {
             new CAllowMobilePathing(),
-            new CMustHaveWall(),
+            new CFixedRotation(),
             new CTakesDuration
             {
-                Total = 5f
+                Total = 5f,
+                Mode = InteractionMode.Appliances
             },
             new CDisplayDuration
             {
                 Process = GetCustomGameDataObject<BombProcess>().ID
             },
-            new CDynamite(),
-            new CIsInactive(),
-            new CBreachAfterDuration
+            new CDynamite
             {
-                DestroyDistance = 1,
-                HatchDistance = 1
-            }
+                UseAtNight = true
+            },
+            new CIsInactive(),
+            new CExplodeAfterDuration()
+            {
+                Width = 3,
+                Length = 3,
+                DestroyAppliances = false,
+            },
         };
 
-        public override GameObject Prefab => GetPrefab("Dynamite");
+        public override GameObject Prefab => GetPrefab("Creative Dynamite");
         public override void SetupPrefab(GameObject prefab)
         {
-            prefab.ApplyMaterialToChild("Charge", "Plastic - Red", "Wood - Corkboard", "Clothing Black");
+            prefab.ApplyMaterialToChild("Charge", "Plastic - Blue", "Wood - Corkboard", "Clothing Black");
             prefab.TryAddComponent<LitFuseView>().Fuse =
                 prefab.GetChild("Fuse").ApplyMaterial<ParticleSystemRenderer>(MaterialUtils.GetExistingMaterial("Plastic - Yellow")).GetComponent<ParticleSystem>();
         }
-
-        public override List<Appliance> Upgrades => new()
-        {
-            GetCastedGDO<Appliance, SledgehammerSource>(),
-        };
     }
 }

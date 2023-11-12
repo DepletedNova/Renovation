@@ -47,8 +47,8 @@ namespace KitchenRenovation.Systems
                         var occupant = GetOccupant(forward);
 
                         if (occupant != Entity.Null && Has<CAppliance>(occupant) && 
-                            ((!cForward.IgnoreAppliances && !Has<CAllowMobilePathing>(occupant)) || 
-                            Has<CApplianceChair>(occupant) || Has<CApplianceTable>(occupant) || Has<CApplianceHostStand>(occupant)))
+                            ((!cForward.IgnoreAppliances && !Has<CAllowMobilePathing>(occupant)) && !Has<CApplianceChair>(occupant) || 
+                            Has<CApplianceTable>(occupant) || Has<CApplianceHostStand>(occupant)))
                         {
                             Set<CIsInactive>(entity);
                             continue;

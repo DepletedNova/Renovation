@@ -9,7 +9,7 @@ namespace KitchenRenovation.Systems
         protected override void Initialise()
         {
             base.Initialise();
-            GenericSystemBaseExt.Walls = GetEntityQuery(typeof(CTargetableWall), typeof(CPosition), typeof(CWallTargetedBy));
+            GenericSystemBaseExt.Walls = GetEntityQuery(typeof(CTargetableWall), typeof(CPosition), typeof(CWallTargetedBy), typeof(CTakesDuration));
         }
 
         protected override void OnUpdate()

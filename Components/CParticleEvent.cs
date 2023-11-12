@@ -9,12 +9,12 @@ namespace KitchenRenovation.Components
     {
         public ParticleEvent Event;
 
-        public static Entity Create(EntityManager em, ParticleEvent e, Vector3 pos = default)
+        public static Entity Create(EntityManager em, ParticleEvent e, CPosition pos = default)
         {
             Entity entity = em.CreateEntity();
             em.AddComponentData(entity, new CParticleEvent { Event = e });
             em.AddComponentData(entity, new CRequiresView { Type = ParticleEventView });
-            em.AddComponentData<CPosition>(entity, pos);
+            em.AddComponentData(entity, pos);
             return entity;
         }
     }

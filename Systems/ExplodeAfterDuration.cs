@@ -1,5 +1,6 @@
 ﻿using Kitchen;
 using Kitchen.Layouts;
+using KitchenData;
 using KitchenRenovation.Components;
 using KitchenRenovation.Utility;
 using Unity.Collections;
@@ -45,8 +46,10 @@ namespace KitchenRenovation.Systems
                     for (int y = -floorLength; y <= ceilLength; y++)
                     {
                         var tilePos = rounded + cPos.Right(x) + cPos.Forward(y);
-                        var currentTile = GetTile(tilePos);
+                        if (!Bounds.Contains(tilePos))
+                            continue;
 
+                        var currentTile = GetTile(tilePos);
                         if (currentTile.Type == RoomType.NoRoom)
                             continue;
 
@@ -71,6 +74,7 @@ namespace KitchenRenovation.Systems
                 }
 
                 CParticleEvent.Create(EntityManager, ParticleEvent.Explosion, rounded);
+                CSoundEvent.Create(EntityManager, ExplosionSoundEvent);
 
                 EntityManager.DestroyEntity(entity);
 
@@ -81,7 +85,13 @@ namespace KitchenRenovation.Systems
         private void TryDestroyWall(CLayoutRoomTile from, CLayoutRoomTile to)
         {
             if (this.GetTargetableFeature(from, to, out Entity wall))
+            {
                 Set<CRemovedWall>(wall);
+                if (Has<CHatch>(wall))
+                {
+                    EntityManager.RemoveComponent<CHatch>(wall);
+                }
+            }
         }
     }
 }

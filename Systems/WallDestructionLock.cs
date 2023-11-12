@@ -5,7 +5,7 @@ using Unity.Entities;
 
 namespace KitchenRenovation.Systems
 {
-    [UpdateInGroup(typeof(DurationLocks), OrderFirst = true)]
+    [UpdateInGroup(typeof(DurationLocks))]
     public class WallDestructionLock : GameSystemBase
     {
         private EntityQuery Walls;
@@ -64,14 +64,7 @@ namespace KitchenRenovation.Systems
                         }
                     }
                     else
-                    {
                         Set<CPreventUse>(entity);
-                        if (isRemoved)
-                        {
-                            cDuration.Remaining = 10f;
-                            cDuration.Total = 10f;
-                        }
-                    }
 
                     Set(entity, cDuration);
                 }
