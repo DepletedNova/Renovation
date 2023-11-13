@@ -36,6 +36,9 @@ namespace KitchenRenovation.Systems
             if (currentLocation.Rounded().IsDiagonal(targetLocation.Rounded()))
                 return;
 
+            if (!Bounds.Contains(currentLocation) || !Bounds.Contains(targetLocation))
+                return;
+
             var currentTile = GetTile(currentLocation);
             var targetTile = GetTile(targetLocation);
             if (!this.GetTargetableFeature(currentTile, targetTile, out var entity) || (Has<CReaching>(entity) && !cDestructive.DestroyToWall))

@@ -24,7 +24,7 @@ namespace KitchenRenovation
     {
         public const string NAME = "Renovation";
         public const string GUID = "nova.renovation";
-        public const string VERSION = "1.0.0";
+        public const string VERSION = "1.0.1";
 
         public Main() : base(GUID, NAME, "Zoey Davis", VERSION, ">=1.0.0", Assembly.GetExecutingAssembly()) { }
 

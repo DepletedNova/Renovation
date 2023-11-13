@@ -211,7 +211,6 @@
     <Compile Include="Utility\Vector3Ext.cs" />
     <Compile Include="Views\CostIndicatorView.cs" />
     <Compile Include="Views\DestructiveDrillView.cs" />
-    <Compile Include="Views\LayoutHighlightView.cs" />
     <Compile Include="Views\LitFuseView.cs" />
     <Compile Include="Views\NightObjectView.cs" />
     <Compile Include="Views\ParticleView.cs" />

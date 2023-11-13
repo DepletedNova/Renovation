@@ -47,6 +47,12 @@ namespace KitchenRenovation.Systems
                     continue;
 
                 var forward = rounded - cPos.Forward(1f);
+                if (!Bounds.Contains(forward))
+                {
+                    Set<CIsInactive>(entity);
+                    continue;
+                }
+
                 var cO = GetOccupant(rounded);
                 var fO = GetOccupant(forward);
 
