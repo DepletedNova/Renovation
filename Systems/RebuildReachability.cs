@@ -1,4 +1,5 @@
 ﻿using Kitchen;
+using Kitchen.Layouts;
 using KitchenRenovation.Components;
 using KitchenRenovation.Utility;
 using Unity.Collections;
@@ -67,7 +68,7 @@ namespace KitchenRenovation.Systems
                     var feature = features[i2];
                     if ((feature.Tile1 == wall.Tile1 && feature.Tile2 == wall.Tile2) || (feature.Tile2 == wall.Tile1 && feature.Tile1 == wall.Tile2))
                     {
-                        feature.Type = Kitchen.Layouts.FeatureType.Hatch;
+                        feature.Type = FeatureType.Hatch;
                         features[i2] = feature;
                         replacedFeature = true;
                         break;
@@ -79,7 +80,7 @@ namespace KitchenRenovation.Systems
                     {
                         Tile1 = wall.Tile1,
                         Tile2 = wall.Tile2,
-                        Type = Kitchen.Layouts.FeatureType.Hatch
+                        Type = FeatureType.Hatch
                     });
                 }
             }

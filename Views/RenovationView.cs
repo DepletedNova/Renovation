@@ -263,7 +263,7 @@ namespace KitchenRenovation.Views
             [Key(1)] public List<Vector3> Doorstops;
 
             public bool IsChangedFrom(ViewData check) =>
-                !WallModifications.IsEqual(check.WallModifications) || !Doorstops.IsEqual(check.Doorstops);
+                !WallModifications.Equals(check.WallModifications) || !Doorstops.Equals(check.Doorstops);
         }
 
         private class UpdateView : IncrementalViewSystemBase<ViewData>
