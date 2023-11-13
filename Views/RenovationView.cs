@@ -26,13 +26,27 @@ namespace KitchenRenovation.Views
         [SerializeField] public GameObject DoorstopPrefab;
         [SerializeField] public GameObject HatchPrefab;
 
+        private void Update()
+        {
+            if (QueuedChange && Layout != null && Layout.IsInitialised)
+            {
+                QueuedChange = false;
+                UpdateData(Data);
+            }
+        }
+
+        private bool QueuedChange = false;
         private ViewData Data = default;
         protected override void UpdateData(ViewData data)
         {
-            if (Layout == null || !Data.IsChangedFrom(data))
-                return;
-
             Data = data;
+
+            if (Layout == null || !Layout.IsInitialised)
+            {
+                QueuedChange = true;
+                return;
+            }
+
 
             // Remove unused modifications
             for (int i = Hatches.Count - 1; i >= 0; i--) // Unused Hatches
@@ -263,7 +277,7 @@ namespace KitchenRenovation.Views
             [Key(1)] public List<Vector3> Doorstops;
 
             public bool IsChangedFrom(ViewData check) =>
-                !WallModifications.Equals(check.WallModifications) || !Doorstops.Equals(check.Doorstops);
+                !WallModifications.IsEqual(check.WallModifications) || !Doorstops.IsEqual(check.Doorstops);
         }
 
         private class UpdateView : IncrementalViewSystemBase<ViewData>

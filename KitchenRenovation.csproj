@@ -196,6 +196,7 @@
     <Compile Include="Systems\PurchaseableLock.cs" />
     <Compile Include="Systems\RemoveDailyPurchases.cs" />
     <Compile Include="Systems\RemoveInactiveFromDynamite.cs" />
+    <Compile Include="Systems\ResetWallDurationsAtNight.cs" />
     <Compile Include="Systems\ResetWallToolTargets.cs" />
     <Compile Include="Systems\UpdateWallAfterDuration.cs" />
     <Compile Include="Systems\EnsureRenovationView.cs" />

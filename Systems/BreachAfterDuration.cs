@@ -78,6 +78,12 @@ namespace KitchenRenovation.Systems
                     Set<CReaching>(wall);
                     Set<CHatch>(wall);
                 }
+
+                if (Require(wall, out CTakesDuration cDuration))
+                {
+                    cDuration.Remaining = cDuration.Total;
+                    Set(wall, cDuration);
+                }
             }
         }
     }
