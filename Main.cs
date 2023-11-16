@@ -24,7 +24,7 @@ namespace KitchenRenovation
     {
         public const string NAME = "Renovation";
         public const string GUID = "nova.renovation";
-        public const string VERSION = "1.0.3";
+        public const string VERSION = "1.0.4";
 
         public Main() : base(GUID, NAME, "Zoey Davis", VERSION, ">=1.0.0", Assembly.GetExecutingAssembly()) { }
 
@@ -38,6 +38,7 @@ namespace KitchenRenovation
         public static CustomViewType ParticleEventView;
         public static ShoppingTags MiscShoppingTag = (ShoppingTags)1048576;
         public static ShoppingTags RemovalShoppingTag = (ShoppingTags)524288;
+
 
         private void PostActivate()
         {

@@ -41,7 +41,6 @@ namespace KitchenRenovation.GDOs
         public override List<IApplianceProperty> Properties => new()
         {
             new CAllowMobilePathing(),
-            new CMustHaveWall(),
             new CTakesDuration
             {
                 Total = 5f

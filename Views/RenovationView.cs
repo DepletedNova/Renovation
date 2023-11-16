@@ -47,7 +47,6 @@ namespace KitchenRenovation.Views
                 return;
             }
 
-
             // Remove unused modifications
             for (int i = Hatches.Count - 1; i >= 0; i--) // Unused Hatches
             {
@@ -185,22 +184,19 @@ namespace KitchenRenovation.Views
             var builder = Layout.Builder;
 
             // Walls
-            var wallIndex = builder.Walls.FindIndex(p => 
-                (p.Tile1.ToWorld() == Tile1 && p.Tile2.ToWorld() == Tile2) || 
-                (p.Tile2.ToWorld() == Tile1 && p.Tile1.ToWorld() == Tile2));
-            if (wallIndex != -1)
+            var walls = builder.Walls.FindAll(p =>
+            (p.Tile1.ToWorld().IsSameTile(Tile1) && p.Tile2.ToWorld().IsSameTile(Tile2)) ||
+                (p.Tile2.ToWorld().IsSameTile(Tile1) && p.Tile1.ToWorld().IsSameTile(Tile2)));
+            for (int i = 0; i < walls.Count; i++)
             {
-                var wall = builder.Walls[wallIndex];
-                if (wall.Collider != null)
-                {
-                    Destroy(wall.Collider.gameObject);
-                    builder.Walls.RemoveAt(wallIndex);
-                }
+                var index = builder.Walls.IndexOf(walls[i]);
+                Destroy(builder.Walls[index].Collider.gameObject);
+                builder.Walls.RemoveAt(index);
             }
 
             // Doors
             var doorIndex = 
-                builder.Doors.FindIndex(p => (p.Tile1.ToWorld() == Tile1 && p.Tile2.ToWorld() == Tile2) || (p.Tile2.ToWorld() == Tile1 && p.Tile1.ToWorld() == Tile2));
+                builder.Doors.FindIndex(p => (p.Tile1.ToWorld().IsSameTile(Tile1) && p.Tile2.ToWorld().IsSameTile(Tile2)) || (p.Tile2.ToWorld().IsSameTile(Tile1) && p.Tile1.ToWorld().IsSameTile(Tile2)));
             if (doorIndex != -1)
             {
                 var door = builder.Doors[doorIndex];
